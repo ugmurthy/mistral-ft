@@ -68,6 +68,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   console.log("2. Got Response. from mistral")
  
+  
   return new Response(response.body, {
           headers:{'Content-type':'text/event-stream'}
         });

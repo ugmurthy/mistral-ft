@@ -2,8 +2,8 @@
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {  useLoaderData } from "@remix-run/react";
 import Prompt from '../components/Prompt'
+//import TextStreamComponent from "~/components/StreamCapture";
 import TextStreamComponent from "~/components/StreamCapture";
-
 function getURLdetails(request:Request) {
 	
     const url = new URL(request.url);
