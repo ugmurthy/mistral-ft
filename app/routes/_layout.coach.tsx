@@ -44,7 +44,11 @@ if (prompt==="") {
 }
 
 return (
+    <div className="p-10">
+    <div>{prompt}</div>    
     <TextStreamComponent url={`/api/v2/mistral?role=${role}&prompt=${prompt}`}></TextStreamComponent>
+    <Prompt></Prompt>
+    </div>
 )
 
 }

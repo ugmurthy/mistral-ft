@@ -1,9 +1,27 @@
 import  { useState, useEffect } from 'react';
+import _ from 'lodash'
 
 const TextStreamComponent = ({ url }) => {
   const [text, setText] = useState('');
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  function chunks2Array(chunk) {
+    function getStr(c) {
+      if (c!=="") return JSON.parse(c);
+     }
+    // return an array of json objects
+    // check if chunk has json objects, remove non-json objects from string
+    const retval = chunk.split('\n').map((c)=>c.substring(_.indexOf(c,"{"),_.lastIndexOf(c,"}")+1))
+    //console.log(retval)
+    if (retval[retval.length-1]==="") {
+      retval.pop();
+    }
+    const objArray = retval.map(getStr)
+    //console.log("Chunks2Array: ",objArray);
+    return _.compact(objArray)
+  }
 
   useEffect(() => {
     // Create a function to handle the streaming of text data
@@ -25,6 +43,10 @@ const TextStreamComponent = ({ url }) => {
           const newText = decoder.decode(value, { stream: true });
           // Update the state with the new text chunk
           setText((prevText) => prevText + newText);
+          const chunk_json = chunks2Array(newText); // return array of json objects
+          console.log("text :",newText)
+          console.log("chunkjson :", chunk_json)
+          setData(prevData => [...prevData, ...chunk_json]);
         }
       } catch (e) {
         setError(e.message);
@@ -45,8 +67,15 @@ const TextStreamComponent = ({ url }) => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  const content = data?.map((d)=>(d.choices[0].delta.content))
+  return (
+  
+  <div>{content}
+  
+  </div>
 
-  return <div>{text}</div>;
+)
+  
 };
 
 export default TextStreamComponent;
