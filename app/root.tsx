@@ -19,12 +19,12 @@ import Theme from './components/Theme';
 export const meta: MetaFunction = () => {
   return [
     {
-      title: 'RAG Starter',
+      title: 'My Coach',
     },
     {
       name: 'description',
       content:
-        'RAG Starter Repo',
+        'AI Based Running Coach for your personal use',
     },
   ];
 };
@@ -49,7 +49,7 @@ function Document({ children }: { children: React.ReactNode }) {
   
   return (
     <html lang="en" >
-      <Theme/>
+      
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" /> 
