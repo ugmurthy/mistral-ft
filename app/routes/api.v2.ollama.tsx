@@ -2,7 +2,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, } from "@remix-run/react";
-import { chat } from "~/api/ollama";
+import { chat } from "~/api/ollama.server";
 //import { mistralChat } from "~/api/openaiAPI";
 
 function getURLdetails(request:Request) {

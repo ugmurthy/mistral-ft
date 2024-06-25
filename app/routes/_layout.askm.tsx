@@ -2,9 +2,9 @@ import type { LoaderFunction, LoaderFunctionArgs, SerializeFrom } from "@remix-r
 import { defer, json } from "@remix-run/node";
 import { Await, useLoaderData, useNavigation, } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
-import {chat } from '../api/ollama';
+import {chat } from '../api/ollama.server';
 import ChatData from "~/components/ChatData";
-import { mistralChat } from "~/api/mistralAPI";
+import { mistralChat } from "~/api/mistralAPI.server";
 import Prompt from "~/components/Prompt";
 import CommandCopy from "~/components/CommandCopy";
 

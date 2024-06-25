@@ -1,3 +1,6 @@
+//
+// inspired by chatGPT
+//
 import { Link } from '@remix-run/react'
 
 function PromptCard({url,cardTitle,cardText}) {
