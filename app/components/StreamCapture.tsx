@@ -26,6 +26,7 @@ const TextStreamComponent = ({ url }) => {
   useEffect(() => {
     // Create a function to handle the streaming of text data
     let reader;
+    let count=0;
     const fetchTextStream = async () => {
       try {
         const response = await fetch(url);
@@ -42,11 +43,11 @@ const TextStreamComponent = ({ url }) => {
           if (done) break;
           const newText = decoder.decode(value, { stream: true });
           // Update the state with the new text chunk
-          setText((prevText) => prevText + newText);
+          
           const chunk_json = chunks2Array(newText); // return array of json objects
-          console.log("text :",newText)
-          console.log("chunkjson :", chunk_json)
-          setData(prevData => [...prevData, ...chunk_json]);
+          setText((prevText) => prevText + newText);
+          //console.log("chunkjson :", chunk_json)
+          //setData(prevData => [...prevData, ...chunk_json]);
         }
       } catch (e) {
         setError(e.message);
@@ -67,11 +68,14 @@ const TextStreamComponent = ({ url }) => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-  const content = data?.map((d)=>(d.choices[0].delta.content))
+  
+  const jsonArray = chunks2Array(text);
+  const textArray = jsonArray.map((a)=>a.choices[0].delta.content);
+  const content = textArray.join('');
   return (
   
-  <div>{content}
-  
+  <div>
+    <div className='p-10'>{content}</div>
   </div>
 
 )
