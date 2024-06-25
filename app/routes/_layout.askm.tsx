@@ -5,6 +5,8 @@ import { mistralChat } from "~/api/mistralAPI.server";
 import _ from 'lodash';
 import Prompt from "~/components/Prompt";
 import { useLoaderData } from "@remix-run/react";
+import CommandCopy from "~/components/CommandCopy";
+import MarkDown from "~/components/MarkDown";
 
 function getURLdetails(request:Request) {
 	
@@ -25,7 +27,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         return JSON.parse(c);
         } catch(e) {
           console.log("Error while parsing");
-          console.log("chunks2Arrat : ",c)
+          console.log("chunks2Array : ",c)
           return {}
         }
      }
@@ -44,18 +46,29 @@ export async function loader({ request }: LoaderFunctionArgs) {
   function array2Content(data) {
     let result='';
     for (const chunk of data) {
+        try {
         result = result + chunk.choices[0].delta.content;
+        } catch(e) {
+            console.log("array2Content chunk error ",chunk)
+        }
     }
     return result
     
 }
   const {prompt,role,remember} = getURLdetails(request);
 
-    const modifiedPrompt = prompt // ++  depending on what we expecting
+  if (!(role && prompt)) {
+    return json({content:"",prompt:""})
+  }
+    ///
+    const addInstruct = ".Always ENSURE all output is in markdown format and provide titles, numbered subtitled, emphasis."
+    const modifiedPrompt = prompt +addInstruct // ++  depending on what we expecting
     const user = [{role:"user",content:modifiedPrompt}]
+    const sysPrompt = "You are an expert Marathon Coach. Your knowledge encompasses all allied fields related to running such as Nutrition, strength and mental training,musculoskeletal system, ability to motivate athletes, and racing strategy. Respond to questions and or topic related to Running. Politely refuse to answer other questions."
     //@TODO : get a prompt for 'system' depending on 'role' for now it is null
-    const system = [{role:"system",content:"You are a world class Marathon Coach. Respond to questions and or topic related to Running. Politely refuse to answer other questions"}]; //@TODO
+    const system = [{role:"system",content:sysPrompt}]; //@TODO
     const messages = [...system, ...user]
+    ///
 
     //1 const ret_val = await chat(model,messages,false);
     //2 return {data:ret_val,prompt};
@@ -66,7 +79,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw new Response('API Error', { status: response.status });
   }
   if (!response.body) {
-    throw new Error("Chat stream response has no body");
+    new Response("Response stream response has no body",{status:500})
+    
   }
 
   console.log("1. Got Response. from mistral")
@@ -108,8 +122,26 @@ export default function Component(){
   return (
       <div className="p-10">
       <div>{prompt}</div> 
-      <div></div>   
-      <div>{content}</div>
+      <CommandCopy txt={prompt} btnTxt="Copy"></CommandCopy>
+      
+      
+       <div className="chat chat-start">
+            <div className="chat-image avatar">
+                <div className="w-10 ">
+                <img
+                    alt="Tailwind CSS chat bubble component"
+                    src="/mistral.png" />
+                </div>
+            </div>
+            
+            <div className="chat-bubble"> <CommandCopy txt={content} btnTxt="Copy"></CommandCopy><MarkDown markdown={content} className={"font-thin text-sm"}></MarkDown> </div>
+            
+            <div className="chat-footer opacity-50">Token Stats</div>
+         </div>
+
+
+     
+      <div className="pt-20"></div>
       <Prompt></Prompt>
       </div>
   )
