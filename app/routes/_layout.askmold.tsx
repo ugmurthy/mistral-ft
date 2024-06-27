@@ -2,12 +2,12 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { mistralChat } from "~/api/mistralAPI.server";
+import _, { chunk } from 'lodash';
 import Prompt from "~/components/Prompt";
 import { useLoaderData } from "@remix-run/react";
 import CommandCopy from "~/components/CommandCopy";
 import MarkDown from "~/components/MarkDown";
 import {write_file } from "../helpers/fs.server"
-import {chunks2JSON, getStats, jsonArray2Content} from '../helpers/processChunks.server';
 
 function getURLdetails(request:Request) {
 	
@@ -24,30 +24,54 @@ function getURLdetails(request:Request) {
 export async function loader({ request }: LoaderFunctionArgs) {
 
     const directory = process.env.VERCEL ? "/tmp/tmpdata" : "./public/tmpdata"
-    //const fname = directory+"/allchunks.json"  // one element per chunk
-   
-  
+    const fname = directory+"/allchunks.json"  // one element per chunk
+    function chunks2Array(chunk) {
+    function getStr(c) {
+      if (c!=="") 
+        try {
+        return JSON.parse(c);
+        } catch(e) {
+          console.log("Error while parsing");
+          console.log("chunks2Array : ",c)
+          return {}
+        }
+     }
+    // return an array of json objects
+    // check if chunk has json objects, remove non-json objects from string
+    const retval = chunk.split('\n').map((c)=>c.substring(_.indexOf(c,"{"),_.lastIndexOf(c,"}")+1))
+    //console.log(retval)
+    if (retval[retval.length-1]==="") {
+      retval.pop();
+    }
+    const objArray = retval.map(getStr)
+    //console.log("Chunks2Array: ",objArray);
+    return _.compact(objArray)
+  }
+
+  function array2Content(data) {
+    let result='';
+    for (const chunk of data) {
+        try {
+        result = result + chunk.choices[0].delta.content;
+        } catch(e) {
+            console.log("array2Content chunk error ",chunk)
+        }
+    }
+    return result
+    
+}
   const {prompt,role,remember} = getURLdetails(request);
 
   if (!(role && prompt)) {
     return json({content:"",prompt:""})
   }
     ///
-    const addInstruct = "ALWAYS ENSURE your output is in markdown format.Provide titles,subtitled, emphasis. where appropriate"
+    const addInstruct = ".Always ENSURE all output is in markdown format and provide titles, numbered subtitled, emphasis."
     const modifiedPrompt = prompt +addInstruct // ++  depending on what we expecting
     const user = [{role:"user",content:modifiedPrompt}]
-    const sysPrompt = `
-    You are an expert Marathon Coach. you are NOT to RESPOND on any other TOPIC NOT RELATED TO RUNNING.
-    Your knowledge is limited to RUNNING and allied TOPICS  
-    such as NUTRITION, STRENGTH and MENTAL training,MUSCULOSKELATAL system,  
-    ability to MOTIVATE athletes, sharing RACING STRATEGIES. 
-    Respond to questions and or topic related to Running ONLY. 
-    Do not respond to other REQUEST. 
-    ALWAYS Politely refuse to answer questions not related 
-    to RUNNING in one SINGLE SENTENCE : 'As a Marathon Coach, I am not an expert in ...'
-    `    
-   
-    const system = [{role:"system",content:sysPrompt}]; 
+    const sysPrompt = "You are an expert Marathon Coach. Your knowledge encompasses all allied fields related to running such as Nutrition, strength and mental training,musculoskeletal system, ability to motivate athletes, and racing strategy. Respond to questions and or topic related to Running. Politely refuse to answer other questions."
+    //@TODO : get a prompt for 'system' depending on 'role' for now it is null
+    const system = [{role:"system",content:sysPrompt}]; //@TODO
     const messages = [...system, ...user]
     ///
 
@@ -55,7 +79,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     //2 return {data:ret_val,prompt};
 
     const response = await mistralChat(role,messages,true);
-    console.log(messages)
+
   if (!response.ok) {
     throw new Response('API Error', { status: response.status });
   }
@@ -72,30 +96,34 @@ export async function loader({ request }: LoaderFunctionArgs) {
   console.log("2. Reader set up")
   let data = [];
   let content = ""
-
+  const chunkArray=[];
+  let balance="";
+  let count = 0
   while(true) {
     
     const {done,value } = await reader.read()
     if (done) {
       console.log("3. Reading completed")
+      write_file(fname,JSON.stringify({count,chunkArray},null,2))
       break;
     }
     const chunk = new TextDecoder().decode(value);
-    const jlines = chunks2JSON(chunk)
-    data = [...data, ...jlines]
+    chunkArray.push(chunk) 
+    count++;
+    data.push(chunks2Array(chunk))
   }
+  console.log("Length data as is ",data.length)
+  console.log("Length data flat  ",_.flatten(data).length)
+  console.log("Chunk Count ",count)
+  data = _.flatten(data);
   
-  content = jsonArray2Content(data);
-  const last = data[data.length-1];
-  let stats=''
-  if (last?.usage) {
-    stats=getStats(last)
-  }
-  return json({prompt,content,stats});
+  
+  content = array2Content(data);
+  return json({prompt,content});
   
 }
 export default function Component(){
-  const {content,prompt,stats} = useLoaderData<typeof loader>(); 
+  const {content,prompt} = useLoaderData<typeof loader>(); 
   
   if (prompt==="") {
     return (
@@ -120,10 +148,10 @@ export default function Component(){
             
             <div className="chat-bubble"> <CommandCopy txt={content} btnTxt="Copy"></CommandCopy><MarkDown markdown={content} className={"font-thin text-sm"}></MarkDown> </div>
             
-            <div className="chat-footer opacity-50">Token Stats : {stats}</div>
+            <div className="chat-footer opacity-50">Token Stats</div>
          </div>
 
-      
+
      
       <div className="pt-20"></div>
       <Prompt></Prompt>
