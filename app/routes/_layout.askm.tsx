@@ -1,4 +1,8 @@
+
 // app/routes/chat.tsx
+// VERCEL Timeout
+export const maxDuration = 50; // This function can run for a maximum of 50 seconds
+// VERCEL
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { mistralChat ,modelDesc} from "~/api/mistralAPI.server";
