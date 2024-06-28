@@ -39,8 +39,16 @@ export function getStats(lastJSON){
     const p = lastJSON?.usage.prompt_tokens
     const t = lastJSON?.usage.total_tokens
     const c = lastJSON?.usage.completion_tokens;
-    return `prompt: ${p} response: ${c} total: ${t}`
+    return {prompt:p, response: c,total: t}
 }
+// for delays
+export function sleep(time) {
+    // time in millisecs
+    new Promise((resolve) => setTimeout(resolve,time));
+}
+
+
+
 
 /* TESTING chunks2JSON
 allJSON=[]

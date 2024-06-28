@@ -1,12 +1,12 @@
 import Theme from "./Theme"
 import { Link } from "@remix-run/react"
 function NavBar() {
-  const VERSION = 'V0.03 27Jun24'
+  const VERSION = 'V0.04 28Jun24'
   return (
     <div className="navbar bg-base-100">
   <div className="flex-1">
     
-    <span className="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-red-700  to-orange-300"><Link to="/">My Coach</Link></span><span className="pl-4 mt-2 text-xs font-thin text-gray500">{VERSION}</span>
+    <span className="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-red-700  to-orange-300"><Link to="/">MyCoach</Link></span><span className="pl-4 mt-2 text-xs font-thin text-gray500">{VERSION}</span>
   </div>
   <div className="flex-none gap-2">
     <div className="form-control">
@@ -24,6 +24,7 @@ function NavBar() {
             About
           </Link>
         </li>
+        <li><Link>Settings(TBD)</Link></li>
         <li><Link>Feedback(TBD)</Link></li>
         
       </ul>

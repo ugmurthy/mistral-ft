@@ -21,7 +21,7 @@ export default function CommandCopy({txt,children, btnTxt="Copy", color="black"}
       }
       return (
         <div className='tooltip tooltip-left' data-tip={datatip}>
-        <button className="m-2 btn btn-xs btn-ghost " onClick={handleCopy2Clipboard}>
+        <button className=" btn btn-xs btn-ghost " onClick={handleCopy2Clipboard}>
           <Copy></Copy>
              {children}
         </button>
