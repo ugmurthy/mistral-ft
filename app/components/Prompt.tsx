@@ -4,18 +4,21 @@ import { cx } from '~/helpers/cx';
 
 import { Form , useFetcher, useNavigation} from '@remix-run/react';
 
-// eslint-disable-next-line react/prop-types
-function Component({transition, method="get" ,aiRole='Coach'}) {
+// eslint-disable-next-line react/prop-types : 
+function Component({transition=null, method="get" ,aiRole='Coach'}) {
     //console.log("Prompt ",method, persona, className)
   const [text,setText]=useState("");
   const className = cx("bg-gray-50  outline-1 outline-slate-800")
   const formRef = useRef()
 
-
+  console.log("Prompt text",text);
   function handleKeyPress(e) {
+    //console.log("Prompt Key Press: ",e.code, e.keyCode)
     if (e.keyCode === 13) {
       e.preventDefault();
-      transition(true);
+      if (transition) {
+        transition(true);
+      }
       formRef.current?.submit();
       //fetcher.submit();
     }    

@@ -10,13 +10,34 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
 
-  const prompts=[
-    "I am a newbie and looking help, How can you help?",
-    "What are the benefits of strenght training for runners?",
-    "What impact does iron deficiency have on running?",
-    "I had a bad track workout today. Pep me up",
-    "Explain Sun's role in the Solar System"
+  const pnt = [
+    {
+      "prompt": "I am a newbie and looking help, How can you help?",
+      "title": "Seek Help!"
+    },
+    {
+      "prompt": "Give me a weekly plan for lower body strength training formatted as a table",
+      "title": "Training Plan"
+    },
+    {
+      "prompt": "What impact does iron deficiency have on running?",
+      "title": "Nutrition"
+    },
+    {
+      "prompt": "I had a bad track workout today. Pep me up",
+      "title": "Motivation"
+    },
+    {
+      "prompt": "Explain Sun's role in the Solar System",
+      "title": "A Curve ball!"
+    }
   ]
+  
+  const fixedCards = pnt.map((c,i)=>{
+    const url = `/coach?prompt=${c.prompt}&role=Coach`;
+    return <FixedCard key={i} content={c.prompt} title={c.title} url={url}></FixedCard>
+  })
+  
   return (
     <div className="container mx-auto  px-4 ">
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
@@ -26,11 +47,7 @@ export default function Index() {
       <div className="opacity-70 pb-3 text-xl font-bold flex justify-center">AI based Coach for Recreational Runners</div>
       
       <div className="flex flex-wrap justify-center gap-4">
-      <FixedCard content={prompts[0]} title={"Seek Help!"} url={`/askm?prompt=${prompts[0]}&role=Coach`}></FixedCard>
-      <FixedCard content={prompts[1]} title={"Know more"} url={`/askm?prompt=${prompts[1]}&role=Coach`}></FixedCard>
-      <FixedCard content={prompts[2]} title={"Nutrition"} url={`/askm?prompt=${prompts[2]}&role=Coach`}></FixedCard>
-      <FixedCard content={prompts[3]} title={"Movtivation"} url={`/askm?prompt=${prompts[3]}&role=Coach`}></FixedCard>
-      <FixedCard content={prompts[4]} title={"A Googly!"} url={`/askm?prompt=${prompts[4]}&role=Coach`}></FixedCard>
+      {fixedCards}
       </div>
 
       <div className="pt-10">

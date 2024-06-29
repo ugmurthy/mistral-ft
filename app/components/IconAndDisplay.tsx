@@ -7,7 +7,7 @@ export default function IconAndDisplay({content,prompt,stats}) {
                             ? "bg-neutral-600 text-orange-500 w-10  rounded-full"
                             :"bg-neutral-600 text-blue-500 w-10  rounded-full"
     const text = content?content:prompt
-    const textClass = content?"font-thin text-sm":" text-sm"
+    const textClass = content?"font text-sm":"font-semibold text-sm"
     const iconTxt = content?"M":"A"
     
     

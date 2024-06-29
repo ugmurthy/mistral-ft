@@ -5,6 +5,8 @@ import Prompt from '../components/Prompt'
 
 import { useCallback, useEffect, useState } from "react";
 import _ from "lodash";
+import IconAndDisplay from "~/components/IconAndDisplay";
+import InputBox from "~/components/InputBox";
 function getURLdetails(request:Request) {
 	
     const url = new URL(request.url);
@@ -31,19 +33,32 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
 export default function Component(){
 const {role,prompt} = useLoaderData<typeof loader>(); 
 const [data,setData]= useState([]);
-const [chunks,setChunks]=useState([]);
-const [isInfering,setIsInfering]=useState(false)
-const url = `/api/v2/mistral?prompt=${prompt}&role=${role}`
+//const [chunks,setChunks]=useState([]);
+//const [isInfering,setIsInfering]=useState(false)
 
-console.log(`Role:${role},prompt:${prompt}`);
-//////
+const url = `/api/v2/mistral?prompt=${prompt}&role=${role}`
+//console.log(`Role:${role},prompt:${prompt}`);
 
 function jsonArray2Content(allJSON) {
   let content=''
   for (const j of allJSON) { content += j.choices[0].delta.content}
   return content;
-  }
+}
+  function getStats(lastJSON){
+    // input last JSON from server
+    // openai api format
+    try {
+    const p = lastJSON?.usage.prompt_tokens
+    const t = lastJSON?.usage.total_tokens
+    const c = lastJSON?.usage.completion_tokens;
+    return {prompt:p, response: c,total: t}
+    } catch(e) {
+      return {}
+    }
+}
   
+ const content= jsonArray2Content(data)
+ const stats = getStats(data[data.length-1])
 ///
 useEffect(() => {
   if (prompt) {
@@ -52,7 +67,7 @@ useEffect(() => {
 
     eventSource.onmessage = event => {
 
-      setChunks(prevData => [...prevData, event.data]);
+      //setChunks(prevData => [...prevData, event.data]);
       if (event.data.includes('[DONE]')) {
         console.log("useEffect: Coach: We are all done! Closing EventSource...")
         eventSource.close();
@@ -72,24 +87,34 @@ useEffect(() => {
   }
 }, [prompt,role]);
 
-///
-// hook to capture stream
-//////
+
 if (prompt==="") {
   return (
-    <Prompt aiRole='Coach' transition={isInfering}/>
+    <InputBox aiRole={role}/>
   )
 }
-return (
+
+if (content) {
+  return (
+  <div className="flex flex-col justify-center">
+      <IconAndDisplay prompt={prompt} content="" stats={stats}/>
+      <IconAndDisplay content={content} prompt="" stats={stats}/>
+      <div className="pt-20"></div>
+      <InputBox aiRole={role}></InputBox>
+      
+  </div>)
+}    
+/* return (
+<Prompt aiRole={role}></Prompt>
     <div className="p-10">
     <div>{prompt}</div>    
     <div className="p-4">--------------</div>
     <div>{jsonArray2Content(data)}</div>
     <div className="p-4">--------------</div>
-    <Prompt transition={isInfering}></Prompt>
+    <Prompt></Prompt>
     </div>
 )
-
+ */
 }
 
 //<div className="font-thin">{jsonArray2Content(data)}</div>
