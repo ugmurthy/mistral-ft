@@ -14,8 +14,16 @@ const models = [
 // new: "ft:open-mistral-7b:504267b8:20240627:CSFTcoach:aa7f65ec" // This is slightly more verbose : So far the best
 // new: "ft:open-mistral-7b:504267b8:20240628:FTCoach2806:4d403348" // THIS IS TOO VERBOSE needs > 1000+ tokens, this has system prompt
 export async function mistralChat(role,messages,stream=true) {
-        const model = _.find(models,function(m) {return m.role===role}).model;
-      
+        let model;
+        try {
+           model = _.find(models,function(m) {return m.role===role}).model;
+        } catch(e) {
+          model=""
+        }
+
+        if (!model) {
+          throw new Error("Invalid or missing 'role' ")
+        }
         const temperature = 0.2; // keep it more focussed and deterministic
         const safe_prompt = true;
         const random_seed = 1337; // keep it more deterministic

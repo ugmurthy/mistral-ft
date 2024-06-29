@@ -8,31 +8,39 @@ const TextStreamComponent = ({ url }) => {
   const [content, setContent] = useState('');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   
-  function chunks2Array(chunk) {
-    function getStr(c) {
-      if (c!=="") return JSON.parse(c);
-     }
-    // return an array of json objects
-    // check if chunk has json objects, remove non-json objects from string
-    const retval = chunk.split('\n').map((c)=>c.substring(_.indexOf(c,"{"),_.lastIndexOf(c,"}")+1))
-    //console.log(retval)
-    if (retval[retval.length-1]==="") {
-      retval.pop();
-    }
-    const objArray = retval.map(getStr)
-    //console.log("Chunks2Array: ",objArray);
-    return _.compact(objArray)
-  }
-  function array2Content(data) {
-        let result='';
-        for (const chunk of data) {
-            result = result + chunk.choices[0].delta.content;
-        }
-        return result
-        
-  }
+  function chunks2JSON(chunks) {
+    // arg0 : text chunk as received from data stream
+    // returns array of json which could be empty
+    // process chunks - could be multiline json text - the newlines could be anywhere
+    //
+    let lines = chunks.split("\n\n") 
+    lines = _.compact(lines); 
+    lines = _.flatten(lines);
+    // now we are good to convert array of jsontext to json
+    const linesJSON=[]
+
+    for (const line of lines ) {
+        try { // try parsing
+            const start = _.indexOf(line,"{");
+            const end = _.lastIndexOf(line,"}");
+            const ljson = JSON.parse(line.substring(start,end+1))
+            linesJSON.push(ljson);
+        } catch(e) {
+            console.log('Error:chunk2JSON: parsing chunk',line);
+            
+        }  
+     }    
+    
+    return linesJSON
+}
+
+function jsonArray2Content(allJSON) {
+  let content=''
+  for (const j of allJSON) { content += j.choices[0].delta.content}
+  return content;
+}
+
 useEffect(() => {
     const fetchData = async () => {
       
@@ -54,7 +62,7 @@ useEffect(() => {
           return; 
         }
         const chunk = new TextDecoder().decode(value);
-        const chunk_json = chunks2Array(chunk); // return array of json objects
+        const chunk_json = chunks2JSON(chunk); // return array of json objects
         setData(prevData => [...prevData, ...chunk_json]);
         readChunk(); // Call itself recursively to read the next chunk
       };
@@ -66,11 +74,10 @@ useEffect(() => {
   }, [url]);
 
   useEffect(()=>{
-    setContent(array2Content(data))
+    setContent(jsonArray2Content(data))
   },[data])
 
 if (loading) return <div>Loading...</div>
-if (error) return <div>Error</div>
 
 return (
     <div className='p-10'>

@@ -5,7 +5,7 @@ import { cx } from '~/helpers/cx';
 import { Form , useFetcher, useNavigation} from '@remix-run/react';
 
 // eslint-disable-next-line react/prop-types
-function Component({transition,method="get" ,aiRole='Coach'}) {
+function Component({transition, method="get" ,aiRole='Coach'}) {
     //console.log("Prompt ",method, persona, className)
   const [text,setText]=useState("");
   const className = cx("bg-gray-50  outline-1 outline-slate-800")
