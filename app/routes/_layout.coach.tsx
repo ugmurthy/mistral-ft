@@ -1,19 +1,19 @@
 
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {  useLoaderData } from "@remix-run/react";
-import Prompt from '../other_files/Prompt'
+//import Prompt from '../other_files/Prompt'
 
-import { useCallback, useEffect, useState } from "react";
-import _ from "lodash";
+import {  useEffect, useState } from "react";
+//import _ from "lodash";
 import IconAndDisplay from "~/components/IconAndDisplay";
 import InputBox from "~/components/InputBox";
 function getURLdetails(request:Request) {
 	
     const url = new URL(request.url);
     if (url.pathname !== '/favicon.ico') { 
-        const role = url.searchParams.get("role");
-        const prompt= url.searchParams.get("prompt");
-        const e_val =url.searchParams.get("e_val")
+        const role = url.searchParams.get("role") || "";
+        const prompt= url.searchParams.get("prompt") || "";
+        const e_val =url.searchParams.get("e_val") || ""
         return {prompt,role,e_val}
 }
 } 
@@ -23,9 +23,10 @@ function getURLdetails(request:Request) {
 export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     const {prompt,role,e_val} = getURLdetails(request);
     
-    if (!(role && prompt)) {
-      return {role:"",prompt:""}
-    }
+    /* if (!(role && prompt)) {
+      return({role:"",prompt:""})
+    } */
+
     
     return {role,prompt,e_val}
 }

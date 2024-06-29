@@ -9,7 +9,7 @@ export default function IconAndDisplay({content,prompt,stats,evaluate=false}) {
                             :"text-blue-500 w-10")
     const text = content?content:prompt
     const textClass = content?"font text-sm":"font-semibold text-sm"
-    const iconTxt = evaluate?"E":content?"M":"A"
+    const iconTxt = evaluate?"Or":content?"Ft":"At"
     const _stats=content?{"tokens":stats}:{"tokens":{prompt:stats.prompt}}
     
     return (

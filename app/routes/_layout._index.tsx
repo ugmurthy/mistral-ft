@@ -27,10 +27,7 @@ export default function Index() {
       "prompt": "I had a bad track workout today. Pep me up",
       "title": "Motivation"
     },
-    {
-      "prompt": "Explain Sun's role in the Solar System",
-      "title": "A Curve ball!"
-    }
+    
   ]
   
   const fixedCards = pnt.map((c,i)=>{
