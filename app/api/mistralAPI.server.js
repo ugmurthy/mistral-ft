@@ -24,7 +24,7 @@ export async function mistralChat(role,messages,stream=true) {
         if (!model) {
           throw new Error("Invalid or missing 'role' ")
         }
-        const temperature = 0.2; // keep it more focussed and deterministic
+        const temperature = 0.6; // keep it more focussed and deterministic
         const safe_prompt = true;
         const random_seed = 1337; // keep it more deterministic
         const max_tokens = 2000;

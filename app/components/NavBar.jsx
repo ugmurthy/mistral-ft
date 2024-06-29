@@ -1,7 +1,7 @@
 import Theme from "./Theme"
 import { Link } from "@remix-run/react"
 function NavBar() {
-  const VERSION = 'V0.05 29Jun24'
+  const VERSION = 'V0.06 29Jun24'
   return (
     <div className="navbar bg-base-100">
   <div className="flex-1">

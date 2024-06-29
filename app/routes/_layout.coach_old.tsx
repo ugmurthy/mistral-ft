@@ -13,35 +13,32 @@ function getURLdetails(request:Request) {
     if (url.pathname !== '/favicon.ico') { 
         const role = url.searchParams.get("role");
         const prompt= url.searchParams.get("prompt");
-        const e_val =url.searchParams.get("e_val")
-        return {prompt,role,e_val}
+        const remember =url.searchParams.get("remember")
+        return {prompt,role,remember}
 }
 } 
 
 
 
 export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
-    const {prompt,role,e_val} = getURLdetails(request);
+    const {prompt,role,remember} = getURLdetails(request);
     
     if (!(role && prompt)) {
       return {role:"",prompt:""}
     }
-    
-    return {role,prompt,e_val}
+
+    return {role,prompt}
 }
 
 export default function Component(){
-const {role,prompt,e_val} = useLoaderData<typeof loader>(); 
+const {role,prompt} = useLoaderData<typeof loader>(); 
 const [data,setData]= useState([]);
-const [edata,setEdata]= useState([]);
 //const [chunks,setChunks]=useState([]);
 //const [isInfering,setIsInfering]=useState(false)
 
 const url = `/api/v2/mistral?prompt=${prompt}&role=${role}`
 //console.log(`Role:${role},prompt:${prompt}`);
-const urlEval = `/api/v2/mistral?prompt=${prompt}&role=Original`
-const evaluate=e_val?true:false
-//console.log("Evaluating? ",evaluate)
+
 function jsonArray2Content(allJSON) {
   let content=''
   for (const j of allJSON) { content += j.choices[0].delta.content}
@@ -54,27 +51,14 @@ function jsonArray2Content(allJSON) {
     const p = lastJSON?.usage.prompt_tokens
     const t = lastJSON?.usage.total_tokens
     const c = lastJSON?.usage.completion_tokens;
-    const m = model(lastJSON?.model)
-    return {prompt:p, response: c,total: t,model:m}
+    return {prompt:p, response: c,total: t}
     } catch(e) {
       return {}
     }
 }
   
-function model(m) {
-  const details = m.split(":");
-  if (details.length<6) {
-    return {original:details[0]}
-  } else {
-    return     {fineTunedModel:details[4]}
-  }
-}
  const content= jsonArray2Content(data)
  const stats = getStats(data[data.length-1])
- const estats = getStats(edata[edata.length-1])
- const eContent = jsonArray2Content(edata)
- 
-
 ///
 useEffect(() => {
   if (prompt) {
@@ -103,31 +87,6 @@ useEffect(() => {
   }
 }, [prompt,role]);
 
-useEffect(() => {
-  if (prompt && evaluate) {
-    console.log("Evaluating")
-    const eventSource = new EventSource(urlEval);
-    eventSource.onmessage = event => {
-      //setChunks(prevData => [...prevData, event.data]);
-      if (event.data.includes('[DONE]')) {
-        console.log("useEffect: Coach: We are all done! Closing EventSource...")
-        eventSource.close();
-      } else {
-        setEdata(prevData => [...prevData, JSON.parse(event.data)]);
-      } 
-    };
-
-    eventSource.onerror = error => {
-      console.log("Error ",error);
-      eventSource.close()
-    }
-
-    return () => {
-      eventSource.close();
-    };
-  }
-}, [prompt,role]);
-
 
 if (prompt==="") {
   return (
@@ -140,9 +99,7 @@ if (content) {
   <div className="flex flex-col justify-center">
       <IconAndDisplay prompt={prompt} content="" stats={stats}/>
       <IconAndDisplay content={content} prompt="" stats={stats}/>
-      {eContent?<IconAndDisplay content={eContent} prompt="" stats={estats} evaluate={evaluate}/>:""}
-
-      <div className="pt-32"></div>
+      <div className="pt-20"></div>
       <InputBox aiRole={role}></InputBox>
       
   </div>)

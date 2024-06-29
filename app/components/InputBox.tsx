@@ -27,7 +27,7 @@ const handleSubmit = (e) => {
       <input name="role" defaultValue={aiRole} hidden/>  
       <div >
       <div className="flex items-end space-x-2  justify-center">
-      <input type="checkbox" name="pers" className="tooltip checkbox checkbox-xs" data-tip="Personalise" />
+      <input type="checkbox" name="e_val" className="tooltip tooltip-right tooltip-warning checkbox checkbox-xs" data-tip="Evaluate: Warning - when 'on' doubles the token usage as it shows responses from fine tuned model as well as original model" />
       <textarea 
          name="prompt" 
          placeholder={`Ask ${aiRole}...`}
@@ -36,7 +36,7 @@ const handleSubmit = (e) => {
          onKeyUp={handleSubmit}
          >
       </textarea>
-        <div onClick={handleFetch} className="cursor-pointer"><Up></Up></div>
+        <div onClick={handleFetch} className="flex items-center cursor-pointer h-full"><Up></Up></div>
         
       </div>
       </div>
@@ -47,3 +47,4 @@ const handleSubmit = (e) => {
 export default MyForm;
 
 // <textarea name="prompt" className="p-2 border border-gray-300 rounded w-8/12" />
+//<input type="checkbox" name="e_val" className="tooltip checkbox checkbox-xs" data-tip="Evaluate: Warning - this double the token usage." />
