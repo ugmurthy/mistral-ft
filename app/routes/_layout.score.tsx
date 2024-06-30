@@ -91,7 +91,7 @@ function Component() {
   return (
     <div className="p-10">
      
-      <div className="text-2xl font-bold">{"Comparing Result of Fintune Model  v/s Base Model"} <Link className="text-blue-600 underline" to="/coach?role=Coach">Back</Link></div>
+      <div className="text-2xl font-bold">{"Comparing Result of Fintune Model  v/s Base Model"} <Link className="text-blue-600 font-normal underline" to="/coach?role=Coach">Back</Link></div>
       <div className="text-xl font-thin text-red-500">
         Note: This is work in progress may break at times
       </div>
