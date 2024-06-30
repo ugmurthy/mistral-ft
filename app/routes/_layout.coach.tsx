@@ -170,7 +170,9 @@ if (content) {
   return (
   <div className="flex flex-col justify-center">
       <IconAndDisplay prompt={prompt} content="" stats={stats}/>
-      {score?<Link className="text-center underline bg-orange-300 text-blue-700 rounded-md" to={score} >See Comparative Scores</Link>:""}
+      {score?<Link 
+      className="text-center underline bg-orange-300 text-blue-700 rounded-md" to={score} >
+        See Comparative Scores  : Fails sometimes </Link>:""}
       <IconAndDisplay content={content} prompt="" stats={stats}/>
       {eContent?<IconAndDisplay content={eContent} prompt="" stats={estats} evaluate={evaluate}/>:""}
 
