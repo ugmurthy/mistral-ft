@@ -41,7 +41,7 @@ export default function Index() {
       <div className="flex justify-center">
       <img src="AI_Coach.png" width="120" height="120" alt="Ai Coach"/>
       </div>
-      <div className="opacity-70 pb-3 text-xl font-bold flex justify-center">AI based Coach for Recreational Runners</div>
+      <div className="opacity-70 pb-3 text-xl font-bold flex justify-center"><span className="font-bold text-orange-500 pr-2">Mistral AI_</span> based Coach for Recreational Runners</div>
       
       <div className="flex flex-wrap justify-center gap-4">
       {fixedCards}

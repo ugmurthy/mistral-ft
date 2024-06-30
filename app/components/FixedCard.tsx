@@ -3,9 +3,10 @@ function FixedCard({ title, content,url }) {
   return (
     <Link to={url}>
     <div 
-      className="opacity-50 flex flex-col w-80 h-24 border rounded-md shadow-md overflow-hidden" 
+      className=" opacity-50 hover:opacity-90 p-2 flex flex-col w-80 h-24 border rounded-md shadow-md overflow-hidden" 
+      
     >
-      <div className="p-2 bg-gray-100 text-sm font-semibold">
+      <div className=" bg-gray-100 text-sm font-semibold" data-tip={content}>
         {title}
       </div>
 
