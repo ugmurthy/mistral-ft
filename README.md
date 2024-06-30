@@ -6,7 +6,15 @@ This dataset was then used to fine-tune an `open-mistral-7b` model, ensuring it 
 
 With MyCoach, runners can receive expert advice, motivational support, and tailored strategies to improve their performance and enjoy their running journey.
 
-[![MyCoach - A 2 minute video](https://img.youtube.com/vi/2xqyJB3lNsN5Hws.jpg)](https://www.youtube.com/watch?v=JB3lNsN5Hws)
+[![MyCoach - A 2 minute video](https://img.youtube.com/vi/m-BHibMZJ5M.jpg)](https://www.youtube.com/watch?v=m-BHibMZJ5M)
+
+Try out the App here:
+Option 1:
+The latest version with evaluate model features - could fail at time
+[MyCoach App](https://mistral-ft.vercel.app/)
+
+Previous stable version of the app is avaialble here:
+[MyCoach App Stable](https://mistral-khh4cnfbh-murthy-udupas-projects.vercel.app/)
 
 ## Set up a Development Environment
 
