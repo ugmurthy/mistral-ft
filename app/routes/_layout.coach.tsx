@@ -1,6 +1,6 @@
 
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
-import {  useLoaderData } from "@remix-run/react";
+import {  Link, useLoaderData } from "@remix-run/react";
 //import Prompt from '../other_files/Prompt'
 
 import {  useEffect, useState } from "react";
@@ -35,12 +35,17 @@ export default function Component(){
 const {role,prompt,e_val} = useLoaderData<typeof loader>(); 
 const [data,setData]= useState([]);
 const [edata,setEdata]= useState([]);
+//// Evaluation SCORE
+const [score,setScore]=useState("");
+const [evalDone,setEvalDone]=useState(false);
+//// Evaluation
 //const [chunks,setChunks]=useState([]);
 //const [isInfering,setIsInfering]=useState(false)
 
 const url = `/api/v2/mistral?prompt=${prompt}&role=${role}`
 //console.log(`Role:${role},prompt:${prompt}`);
 const urlEval = `/api/v2/mistral?prompt=${prompt}&role=Original`
+
 const evaluate=e_val?true:false
 //console.log("Evaluating? ",evaluate)
 function jsonArray2Content(allJSON) {
@@ -79,14 +84,14 @@ function model(m) {
 ///
 useEffect(() => {
   if (prompt) {
-    
+    setScore("")
     const eventSource = new EventSource(url);
 
     eventSource.onmessage = event => {
 
       //setChunks(prevData => [...prevData, event.data]);
       if (event.data.includes('[DONE]')) {
-        console.log("useEffect: Coach: We are all done! Closing EventSource...")
+        console.log("useEffect: Coach:FINETUNED We are all done! Closing EventSource...")
         eventSource.close();
       } else {
         setData(prevData => [...prevData, JSON.parse(event.data)]);
@@ -111,7 +116,8 @@ useEffect(() => {
     eventSource.onmessage = event => {
       //setChunks(prevData => [...prevData, event.data]);
       if (event.data.includes('[DONE]')) {
-        console.log("useEffect: Coach: We are all done! Closing EventSource...")
+        console.log("useEffect: Coach:ORIGINAL We are all done! Closing EventSource...")
+        setEvalDone(true)
         eventSource.close();
       } else {
         setEdata(prevData => [...prevData, JSON.parse(event.data)]);
@@ -129,7 +135,31 @@ useEffect(() => {
   }
 }, [prompt,role]);
 
+///// SCORING useEffect
+useEffect(() => {
 
+  if (!evalDone) return; /// don't do anything
+
+  async function fetchScore() {
+    //1 Assemble json structure for scoring from prompt, content, econtent
+    //  
+    const jsonQA = {question:prompt, answer01:content, answer02:content}
+
+    const urlScore = `/score?prompt=${JSON.stringify(jsonQA)}&role=Evaluate`
+    console.log("URL ",urlScore);
+    //const response = await fetch(urlScore); // returns json with score
+    //console.log(response)
+    setScore(urlScore);
+    }
+  // looks like we have an evaluation to do 
+  if (evalDone) {
+    fetchScore();
+    return () => {
+     console.log("Scoring done!")
+    };
+  }
+}, [evalDone]);
+///// SCORING useEffect
 if (prompt==="") {
   return (
     <InputBox aiRole={role}/>
@@ -140,6 +170,7 @@ if (content) {
   return (
   <div className="flex flex-col justify-center">
       <IconAndDisplay prompt={prompt} content="" stats={stats}/>
+      {score?<Link className="text-center underline bg-orange-300 text-blue-700 rounded-md" to={score} >See Comparative Scores</Link>:""}
       <IconAndDisplay content={content} prompt="" stats={stats}/>
       {eContent?<IconAndDisplay content={eContent} prompt="" stats={estats} evaluate={evaluate}/>:""}
 
