@@ -8,13 +8,14 @@ With MyCoach, runners can receive expert advice, motivational support, and tailo
 
 [![MyCoach - A 2 minute video](https://img.youtube.com/vi/m-BHibMZJ5M.jpg)](https://www.youtube.com/watch?v=m-BHibMZJ5M)
 
+### MyCoach App
+
 Try out the App here:
-Option 1:
-The latest version with evaluate model features - could fail at times
+The latest version with `quantitative` evaluation of model - could fail at times
 [MyCoach App V0.09](https://mistral-ft.vercel.app/)
 
-Previous stable version of the app is avaialble here:
-[MyCoach App Stable V0.08](https://mistral-khh4cnfbh-murthy-udupas-projects.vercel.app/)
+A stable App version with `qualitative` evaluation of model is avaialble here:
+[MyCoach App V0.08](https://mistral-khh4cnfbh-murthy-udupas-projects.vercel.app/)
 
 ## Set up a Development Environment
 
