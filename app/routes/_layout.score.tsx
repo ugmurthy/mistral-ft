@@ -30,9 +30,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const {prompt,role,remember,sys,pers} = getURLdetails(request);
 
-console.log(`remember ${remember}`);
-console.log(`pers ${pers}`);
-console.log(`sys ${sys}`);
+
 
 if (role!=="Evaluate") {
   return json({result:{},sucess:false})

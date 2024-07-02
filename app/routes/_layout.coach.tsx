@@ -25,14 +25,15 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     let myCoach = process.env.MYCOACH;
     let features={}
     try {
-    console.log("parsing myCoach features...");
     features={...JSON.parse(myCoach)};
+    console.log("parsed  myCoach features...",features);
     } catch(e){
       console.log("\tError parsing features");
       // set defaults
-      features={evaluate:true,temperature:0.7,max_tokens:2000}
-      console.log("Feature Default ",features)
+      features={features:{evaluate:false,temperature:0.7,max_tokens:2000}}
+      console.log("Feature Default(as fallback) ",features)
     }
+    
     /* if (!(role && prompt)) {
       return({role:"",prompt:""})
     } */
@@ -49,6 +50,9 @@ const [edata,setEdata]= useState([]);
 //// Evaluation SCORE
 const [score,setScore]=useState("");
 const [evalDone,setEvalDone]=useState(false);
+console.log("Features ",features)
+const allowEval=features.evaluate;
+
 //// Evaluation
 //const [chunks,setChunks]=useState([]);
 //const [isInfering,setIsInfering]=useState(false)
@@ -56,7 +60,7 @@ const [evalDone,setEvalDone]=useState(false);
 const url = `/api/v2/mistral?prompt=${prompt}&role=${role}`
 //console.log(`Role:${role},prompt:${prompt}`);
 const urlEval = `/api/v2/mistral?prompt=${prompt}&role=Original`
-console.log("Features ",features)
+
 const evaluate=e_val?true:false
 //console.log("Evaluating? ",evaluate)
 function jsonArray2Content(allJSON) {
@@ -174,7 +178,7 @@ useEffect(() => {
 ///// SCORING useEffect
 if (prompt==="") {
   return (
-    <InputBox aiRole={role} allowEval={true}/>
+    <InputBox aiRole={role} allowEval={allowEval}/>
   )
 }
 
@@ -193,7 +197,7 @@ if (content) {
       {eContent?<IconAndDisplay content={eContent} prompt="" stats={estats} evaluate={evaluate}/>:""}
 
       <div className="pt-32"></div>
-      <InputBox aiRole={role} allowEval={true}></InputBox>
+      <InputBox aiRole={role} allowEval={allowEval}></InputBox>
       
   </div>)
 }  
