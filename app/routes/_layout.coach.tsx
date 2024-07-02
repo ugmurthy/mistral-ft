@@ -30,7 +30,7 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     } catch(e){
       console.log("\tError parsing features");
       // set defaults
-      features={features:{evaluate:false,temperature:0.7,max_tokens:2000}}
+      features={features:{evaluate:true,temperature:0.7,max_tokens:2000}}
       console.log("Feature Default(as fallback) ",features)
     }
     
