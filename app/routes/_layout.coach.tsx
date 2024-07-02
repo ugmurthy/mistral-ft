@@ -30,7 +30,8 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     } catch(e){
       console.log("\tError parsing features");
       // set defaults
-      features={evaluate:false,temperature:0.7,max_tokens:1500}
+      features={evaluate:true,temperature:0.7,max_tokens:2000}
+      console.log("Feature Default ",features)
     }
     /* if (!(role && prompt)) {
       return({role:"",prompt:""})
@@ -173,7 +174,7 @@ useEffect(() => {
 ///// SCORING useEffect
 if (prompt==="") {
   return (
-    <InputBox aiRole={role} allowEval={features.evaluate}/>
+    <InputBox aiRole={role} allowEval={features.features.evaluate}/>
   )
 }
 
