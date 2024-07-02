@@ -174,7 +174,7 @@ useEffect(() => {
 ///// SCORING useEffect
 if (prompt==="") {
   return (
-    <InputBox aiRole={role} allowEval={features.features.evaluate}/>
+    <InputBox aiRole={role} allowEval={true}/>
   )
 }
 
