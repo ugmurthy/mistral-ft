@@ -193,7 +193,7 @@ if (content) {
       {eContent?<IconAndDisplay content={eContent} prompt="" stats={estats} evaluate={evaluate}/>:""}
 
       <div className="pt-32"></div>
-      <InputBox aiRole={role} allowEval={features.evaluate}></InputBox>
+      <InputBox aiRole={role} allowEval={true}></InputBox>
       
   </div>)
 }  
