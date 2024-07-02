@@ -26,7 +26,7 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     let features={}
     try {
     features={...JSON.parse(myCoach)};
-    console.log("parsed  myCoach features...",features);
+    console.log("Parsed  myCoach features...",features);
     } catch(e){
       console.log("\tError parsing features");
       // set defaults
