@@ -1,7 +1,7 @@
 import  { useRef } from 'react';
 import Up from './Up'
 
-const MyForm = ({aiRole}) => {
+const MyForm = ({aiRole, allowEval}) => {
   const formRef = useRef(null);
 
   const handleFetch = () => {
@@ -27,7 +27,14 @@ const handleSubmit = (e) => {
       <input name="role" defaultValue={aiRole} hidden/>  
       <div >
       <div className="flex items-end space-x-2  justify-center">
-      <input type="checkbox" name="e_val" className="tooltip tooltip-right tooltip-warning checkbox checkbox-xs" data-tip="Evaluate: Warning - when 'on' doubles the token usage as it shows responses from fine tuned model as well as original model" />
+      {allowEval
+        ?<input 
+          type="checkbox" 
+          name="e_val" 
+          className="tooltip tooltip-right tooltip-warning checkbox checkbox-xs" 
+          data-tip="Evaluate: Warning - when 'on' doubles the token usage as it shows responses from fine tuned model as well as original model" />
+        :""
+      }
       <textarea 
          name="prompt" 
          placeholder={`Ask ${aiRole}...`}

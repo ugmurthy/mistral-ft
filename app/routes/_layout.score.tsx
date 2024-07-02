@@ -55,7 +55,7 @@ Completeness:  answers cover the main benefits, but one of the answer  provides 
 Clarity:  answers are clear and well-written.
 Coherence: answers are logically structured.
 Originality: answers provide unique points but are fairly similar in content.
-Consiseness: answers cover the main points in the shortest number of words: use word count as a indicator
+Conciseness: answers cover the main points in the shortest number of words: use word count as a indicator. The answer using lower number of words scores higher
 Rejection: answers indicate a inability to provide an answer example: I am not an exper...
 
 Output Format:
@@ -75,7 +75,8 @@ Also provide an aggregate score equally weight by all parameter
   // no streaming
   const response = await mistralChat(role,messages,false);
   const ret_val = await(response.json())
-  console.log("/api/v2/score:  Got response ",JSON.stringify(ret_val,null,2))
+  console.log("/api/v2/score:  Got response ")
+  
   const {answer01,answer02,aggregate_scores} = JSON.parse(ret_val.choices[0].message.content)
   const score = {"FineTunedModel":answer01,"BaseModel":answer02,aggregate_scores}
   return json({score});
@@ -88,14 +89,33 @@ function Component() {
   const score = useLoaderData();
   //console.log("Result : ",result)
   
+    const handleClose = () => {
+      window.close();
+    };
+  
   return (
-    <div className="p-10">
+    <div className="m-10 bg-slate-100 border border-1 rounded-lg">
      
-      <div className="text-2xl font-bold">{"Comparing Result of Fintune Model  v/s Base Model"} <Link className="text-blue-600 font-normal underline" to="/coach?role=Coach">Back</Link></div>
-      <div className="text-xl font-thin text-red-500">
-        Note: This is work in progress may break at times
+      <div className="p-4 text-2xl font-bold flex  justify-between">
+        
+
+        {"Comparing Result of Fintuned Model  v/s Base Model"} 
+        <span className="inline-block tooltip tooltip-top" data-tip="Close" onClick={handleClose}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+  <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+</svg></span>
+        
+        </div>
+      <div className="p-4 text-sm font-thin ">
+        <div>
+          The comparision of answers from two models viz. Fine Tuned Model and Base Model is done 
+          via task oriented prompt prefix to a the answers and question. 
+          This then is sent to <pre className="font-semibold inline-block">mistral-large</pre> for inference for output in json-mode.
+          This is still work in progress and improvements can be made. Next is explore function calling for this scoring task
+        </div>
+        <div className="text-red-500">Note: This is work in progress may breaks if the content presented is too large</div>
       </div>
-      <pre className="px-20 font-thin text-sm">{JSON.stringify(score,null,2)}</pre>
+      <pre className="px-20 py-4 font-thin text-sm bg-yellow-50">{JSON.stringify(score,null,2)}</pre>
 
     </div>
   )

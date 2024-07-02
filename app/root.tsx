@@ -19,13 +19,14 @@ import Theme from './components/Theme';
 export const meta: MetaFunction = () => {
   return [
     {
-      title: 'My Coach',
+      title: 'MyCoach',
     },
     {
       name: 'description',
       content:
-        'AI Based Running Coach for your personal use',
+        'A Personal Assistant for Amateur Runners',
     },
+    {image:"/AI_Coach.png"}
   ];
 };
 

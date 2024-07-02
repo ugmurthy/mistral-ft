@@ -1,13 +1,13 @@
-import type { MetaFunction } from "@remix-run/node";
+//import type { MetaFunction } from "@remix-run/node";
 import Disclaimer from "~/components/Disclaimer";
 import FixedCard from "~/components/FixedCard";
-export const meta: MetaFunction = () => {
+/* export const meta: MetaFunction = () => {
   return [
     { title: "My Coach" },
     { name: "description", content: "AI Based Running Coach for personal use" },
   ];
 };
-
+ */
 export default function Index() {
 
   const pnt = [

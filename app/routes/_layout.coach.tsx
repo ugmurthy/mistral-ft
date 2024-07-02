@@ -22,18 +22,28 @@ function getURLdetails(request:Request) {
 
 export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     const {prompt,role,e_val} = getURLdetails(request);
-    
+    let myCoach = process.env.MYCOACH;
+    let features={}
+    try {
+    console.log("parsing myCoach features...");
+    features={...JSON.parse(myCoach)};
+    } catch(e){
+      console.log("\tError parsing features");
+      // set defaults
+      features={evaluate:false,temperature:0.7,max_tokens:1500}
+    }
     /* if (!(role && prompt)) {
       return({role:"",prompt:""})
     } */
 
     
-    return {role,prompt,e_val}
+    return {role,prompt,e_val,...features}
 }
 
 export default function Component(){
-const {role,prompt,e_val} = useLoaderData<typeof loader>(); 
+const {role,prompt,e_val,features} = useLoaderData<typeof loader>(); 
 const [data,setData]= useState([]);
+const [done,setDone]= useState(false); // indicates if inference is done
 const [edata,setEdata]= useState([]);
 //// Evaluation SCORE
 const [score,setScore]=useState("");
@@ -45,7 +55,7 @@ const [evalDone,setEvalDone]=useState(false);
 const url = `/api/v2/mistral?prompt=${prompt}&role=${role}`
 //console.log(`Role:${role},prompt:${prompt}`);
 const urlEval = `/api/v2/mistral?prompt=${prompt}&role=Original`
-
+console.log("Features ",features)
 const evaluate=e_val?true:false
 //console.log("Evaluating? ",evaluate)
 function jsonArray2Content(allJSON) {
@@ -92,6 +102,7 @@ useEffect(() => {
       //setChunks(prevData => [...prevData, event.data]);
       if (event.data.includes('[DONE]')) {
         console.log("useEffect: Coach:FINETUNED We are all done! Closing EventSource...")
+        setDone(true);
         eventSource.close();
       } else {
         setData(prevData => [...prevData, JSON.parse(event.data)]);
@@ -138,7 +149,7 @@ useEffect(() => {
 ///// SCORING useEffect
 useEffect(() => {
 
-  if (!evalDone) return; /// don't do anything
+  if (!evalDone || !done) return; /// don't do anything if either ft model or basemodel has completely responded
 
   async function fetchScore() {
     //1 Assemble json structure for scoring from prompt, content, econtent
@@ -152,17 +163,17 @@ useEffect(() => {
     setScore(urlScore);
     }
   // looks like we have an evaluation to do 
-  if (evalDone) {
+  if (evalDone && done) {
     fetchScore();
     return () => {
      console.log("Scoring done!")
     };
   }
-}, [evalDone]);
+}, [evalDone, done]);
 ///// SCORING useEffect
 if (prompt==="") {
   return (
-    <InputBox aiRole={role}/>
+    <InputBox aiRole={role} allowEval={features.evaluate}/>
   )
 }
 
@@ -170,14 +181,18 @@ if (content) {
   return (
   <div className="flex flex-col justify-center">
       <IconAndDisplay prompt={prompt} content="" stats={stats}/>
-      {score?<Link 
-      className="text-center underline bg-orange-300 text-blue-700 rounded-md" to={score} >
-        See Comparative Scores  : Fails sometimes </Link>:""}
+      {score?<div className="flex justify-center">
+      <Link 
+      className="px-4 text-center underline bg-orange-300 text-blue-700 rounded-md" to={score} 
+      target="_blank" rel="noopener noreferrer"
+      >
+        See Comparative Scores  : Fails sometimes </Link>
+        </div>:""}
       <IconAndDisplay content={content} prompt="" stats={stats}/>
       {eContent?<IconAndDisplay content={eContent} prompt="" stats={estats} evaluate={evaluate}/>:""}
 
       <div className="pt-32"></div>
-      <InputBox aiRole={role}></InputBox>
+      <InputBox aiRole={role} allowEval={features.evaluate}></InputBox>
       
   </div>)
 }  
