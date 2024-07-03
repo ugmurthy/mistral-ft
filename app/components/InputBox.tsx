@@ -31,7 +31,7 @@ const handleSubmit = (e) => {
         ?<input 
           type="checkbox" 
           name="e_val" 
-          className="tooltip tooltip-right tooltip-warning checkbox checkbox-xs" 
+          className="tooltip tooltip-right tooltip-warning bg-neutral-300 checkbox checkbox-xs" 
           data-tip="Evaluate: Warning - when 'on' doubles the token usage as it shows responses from fine tuned model as well as original model" />
         :""
       }
