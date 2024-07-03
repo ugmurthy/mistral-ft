@@ -16,6 +16,10 @@ const handleSubmit = (e) => {
         formRef.current?.submit();
       }    
   };
+
+  const evalMsg = `Evaluate: Warning - When this is 'on' The token usage doubles 
+  as it shows responses from Fine tuned model and the Base Model. 
+  The two responses are then evaluated by mistral-large model to arrive at a score!`
 //className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-lg"
   return (
     <form
@@ -32,7 +36,7 @@ const handleSubmit = (e) => {
           type="checkbox" 
           name="e_val" 
           className="tooltip tooltip-right tooltip-warning bg-neutral-300 checkbox checkbox-xs" 
-          data-tip="Evaluate: Warning - when 'on' doubles the token usage as it shows responses from fine tuned model as well as original model" />
+          data-tip={evalMsg} />
         :""
       }
       <textarea 
