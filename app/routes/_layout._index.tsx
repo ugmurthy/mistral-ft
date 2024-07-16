@@ -1,3 +1,5 @@
+import {validToken} from "../module/sessions.server"
+import {redirect} from "@remix-run/node"
 //import type { MetaFunction } from "@remix-run/node";
 import Disclaimer from "~/components/Disclaimer";
 import FixedCard from "~/components/FixedCard";
@@ -8,6 +10,17 @@ import FixedCard from "~/components/FixedCard";
   ];
 };
  */
+
+export async function loader({request}) {
+  const user = await validToken(request);
+  if (!user) {
+    throw redirect("/login");
+  }
+  console.log("Index Loader:user Authenticated ",user.name, ((user.exp-Date.now())/1000/60/60).toFixed(2),"hours left");
+  return null;
+}
+
+
 export default function Index() {
 
   const pnt = [
@@ -24,8 +37,8 @@ export default function Index() {
       "title": "Nutrition"
     },
     {
-      "prompt": "I had a bad track workout today. Pep me up",
-      "title": "Motivation"
+      "prompt": "Explain theory of Relativity",
+      "title": "Off Topic"
     },
     
   ]

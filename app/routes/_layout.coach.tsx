@@ -2,11 +2,13 @@
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {  Link, useLoaderData } from "@remix-run/react";
 //import Prompt from '../other_files/Prompt'
+import {redirect } from "@remix-run/node";
 
 import {  useEffect, useState } from "react";
 //import _ from "lodash";
 import IconAndDisplay from "~/components/IconAndDisplay";
 import InputBox from "~/components/InputBox";
+import { validToken } from "../module/sessions.server";
 function getURLdetails(request:Request) {
 	
     const url = new URL(request.url);
@@ -21,9 +23,19 @@ function getURLdetails(request:Request) {
 
 
 export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
-    const {prompt,role,e_val} = getURLdetails(request);
+   
+  const user = await validToken(request);
+  if (!user) {
+    throw redirect("/login");
+  }
+  console.log("Index Loader:user Authenticated ",user.name, ((user.exp-Date.now())/1000/60/60).toFixed(2),"hours left");
+  
+  const {prompt,role,e_val} = getURLdetails(request);
     let myCoach = process.env.MYCOACH;
     let features={}
+   
+   
+   
     try {
     features={...JSON.parse(myCoach)};
     console.log("Parsed  myCoach features...",features);

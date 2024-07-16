@@ -4,11 +4,11 @@ import _ from 'lodash';
 const MISTAL_BASE_URL = 'https://api.mistral.ai/v1/'
 
 const models = [
-  {"role":"Coach","model":"ft:open-mistral-7b:504267b8:20240620:MyCoach:29b5b062"},
-  {"role":"Coach1","model":"ft:open-mistral-7b:504267b8:20240627:CSFTcoach:aa7f65ec"},
-  {"role":"Coach2","model":"ft:open-mistral-7b:504267b8:20240628:FTCoach2806:4d403348"},
+  {"role":"Coach1","model":"ft:open-mistral-7b:504267b8:20240620:MyCoach:29b5b062"},
+  {"role":"Coach2","model":"ft:open-mistral-7b:504267b8:20240627:CSFTcoach:aa7f65ec"},
+  {"role":"Coach","model":"ft:open-mistral-7b:504267b8:20240628:FTCoach2806:4d403348"},
   {"role":"Original","model":"open-mistral-7b"},
-  {"role":"Evaluate","model":"mistral-large-latest"}
+  {"role":"Evaluate","model":"open-mistral-7b"}
 ]
 // old: "ft:open-mistral-7b:504267b8:20240620:MyCoach:29b5b062"  // This is concise
 // new: "ft:open-mistral-7b:504267b8:20240627:CSFTcoach:aa7f65ec" // This is slightly more verbose : So far the best
