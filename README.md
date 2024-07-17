@@ -1,21 +1,20 @@
-# MyCoach - A FineTuned Mistral Model to help Amateur Runners
+# RunGenie - A FineTuned Mistral Model to help Amateur Runners
 
-The development of `MyCoach` began as a project for the [Mistral.ai](https://mistral.ai/) Hackathon. Leveraging the **Fine Tuning API**, the project utilised both synthetic and crowd-sourced questions. These questions were answered by leading large language models (LLMs) including ChatGPT-4o, Mistral Large, Gemini Advanced, Llama3-70b, and some smaller models. The responses from these LLMs were compiled to create a robust dataset.
+The development of `RunGenie` began as a project for the [Mistral.ai](https://mistral.ai/) Hackathon. Leveraging the **Fine Tuning API**, the project utilised both synthetic and crowd-sourced questions. These questions were answered by leading large language models (LLMs) including ChatGPT-4o, Mistral Large, Gemini Advanced, Llama3-70b, and some smaller models. The responses from these LLMs were compiled to create a robust dataset.
 
-This dataset was then used to fine-tune an `open-mistral-7b` model, ensuring it was capable of providing expert advice on marathon coaching. The refined model was integrated into `MyCoach`, the front-end web app, to offer users easy access to personalised running guidance.
+This dataset was then used to fine-tune an `open-mistral-7b` model, ensuring it was capable of providing expert advice on marathon coaching. The refined model was integrated into `RunGenie`, the front-end web app, to offer users easy access to personalised running guidance.
 
-With MyCoach, runners can receive expert advice, motivational support, and tailored strategies to improve their performance and enjoy their running journey.
+With RunGenie, runners can receive expert advice, motivational support, and tailored strategies to improve their performance and enjoy their running journey.
 
-[![MyCoach - A 2 minute video](https://img.youtube.com/vi/m-BHibMZJ5M.jpg)](https://www.youtube.com/watch?v=m-BHibMZJ5M)
+Note: RunGenie was earlier called MyCoach
 
-### MyCoach App
+[![RunGenie - A 2 minute video](https://img.youtube.com/vi/m-BHibMZJ5M.jpg)](https://www.youtube.com/watch?v=m-BHibMZJ5M)
+
+### RunGenie App
 
 Try out the App here:
 The latest version with `quantitative` evaluation of model - could fail at times
-[MyCoach App V0.09](https://mistral-ft.vercel.app/)
-
-A stable App version with `qualitative` evaluation of model is avaialble here:
-[MyCoach App V0.08](https://mistral-khh4cnfbh-murthy-udupas-projects.vercel.app/)
+[RunGenie App V0.10](https://mistral-ft.vercel.app/)
 
 ## Set up a Development Environment
 

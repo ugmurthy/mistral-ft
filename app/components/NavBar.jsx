@@ -3,12 +3,12 @@ import { Link } from "@remix-run/react"
 import Avatar from './Avatar'
 
 function NavBar() {
-  const VERSION = 'V0.09 30Jun24'
+  const VERSION = 'V0.10 17Jul24'
   return (
     <div className="navbar bg-base-100">
   <div className="flex-1">
     
-    <span className="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-red-700  to-orange-300"><Link to="/">MyCoach</Link></span><span className="pl-4 mt-2 text-xs font-thin text-gray500">{VERSION}</span>
+    <span className="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-red-700  to-orange-300"><Link to="/">RunGenie</Link></span><span className="pl-4 mt-2 text-xs font-thin text-gray500">{VERSION}</span>
   </div>
   <div className="flex-none gap-2">
     <div className="form-control">
@@ -26,8 +26,8 @@ function NavBar() {
             About
           </Link>
         </li>
-        <li><Link>Settings(TBD)</Link></li>
-        <li><Link>Feedback(TBD)</Link></li>
+        <li><Link to="https://forms.gle/H88rEyZqMDUMD5QPA" target="_blank">Feedback</Link></li>
+        <li><Link to="/logout">Logout</Link></li>
         
       </ul>
     </div>

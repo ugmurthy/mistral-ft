@@ -19,7 +19,7 @@ import Theme from './components/Theme';
 export const meta: MetaFunction = () => {
   return [
     {
-      title: 'MyCoach',
+      title: 'RunGenie',
     },
     {
       name: 'description',

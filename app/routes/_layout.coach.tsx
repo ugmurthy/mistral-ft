@@ -38,7 +38,7 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
    
     try {
     features={...JSON.parse(myCoach)};
-    console.log("Parsed  myCoach features...",features);
+    console.log("Parsed  RunGenie features...",features);
     } catch(e){
       console.log("\tError parsing features");
       // set defaults
@@ -58,7 +58,7 @@ export default function Component(){
 const {role,prompt,e_val,features} = useLoaderData<typeof loader>(); 
 const [data,setData]= useState([]);
 const [done,setDone]= useState(false); // indicates if inference is done
-const [edata,setEdata]= useState([]);
+const [edata,setEdata]= useState([]); // indicates evaluation done
 //// Evaluation SCORE
 const [score,setScore]=useState("");
 const [evalDone,setEvalDone]=useState(false);
@@ -104,6 +104,8 @@ function model(m) {
 }
  const content= jsonArray2Content(data)
  const stats = getStats(data[data.length-1])
+
+ // eval content
  const estats = getStats(edata[edata.length-1])
  const eContent = jsonArray2Content(edata)
  
@@ -188,6 +190,30 @@ useEffect(() => {
   }
 }, [evalDone, done]);
 ///// SCORING useEffect
+
+//// Write questions to db on xata.io
+useEffect(() => {
+  async function writeQuestion() {
+    const jsonQA = {prompt, response:content, stats, userId:""}
+    const urlQA = `/xata.io`
+    console.log("URL ",urlQA);
+    //const response = await fetch(urlWrite); // returns json with score
+    console.log(jsonQA)
+    }
+  if ( done) {
+    console.log("Writing to db")
+    
+    writeQuestion();
+    return () => {
+     console.log("Writing done!")
+    };
+  }
+}, [ done]);
+////
+
+////
+
+
 if (prompt==="") {
   return (
     <InputBox aiRole={role} allowEval={allowEval}/>

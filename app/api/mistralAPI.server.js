@@ -4,11 +4,11 @@ import _ from 'lodash';
 const MISTAL_BASE_URL = 'https://api.mistral.ai/v1/'
 
 const models = [
-  {"role":"Coach1","model":"ft:open-mistral-7b:504267b8:20240620:MyCoach:29b5b062"},
+  {"role":"Coach","model":"ft:open-mistral-7b:504267b8:20240620:MyCoach:29b5b062"},
   {"role":"Coach2","model":"ft:open-mistral-7b:504267b8:20240627:CSFTcoach:aa7f65ec"},
-  {"role":"Coach","model":"ft:open-mistral-7b:504267b8:20240628:FTCoach2806:4d403348"},
+  {"role":"Coach1","model":"ft:open-mistral-7b:504267b8:20240628:FTCoach2806:4d403348"}, // very chatty
   {"role":"Original","model":"open-mistral-7b"},
-  {"role":"Evaluate","model":"open-mistral-7b"}
+  {"role":"Evaluate","model":"mistral-large-latest"}
 ]
 // old: "ft:open-mistral-7b:504267b8:20240620:MyCoach:29b5b062"  // This is concise
 // new: "ft:open-mistral-7b:504267b8:20240627:CSFTcoach:aa7f65ec" // This is slightly more verbose : So far the best
@@ -27,7 +27,7 @@ export async function mistralChat(role,messages,stream=true) {
         const temperature = 0.6; // keep it more focussed and deterministic
         const safe_prompt = true;
         const random_seed = 1337; // keep it more deterministic
-        const max_tokens = 2000;
+        const max_tokens = 3000;
         const url = MISTAL_BASE_URL + 'chat/completions'
         const apiKey = process.env.MISTRAL_API_KEY
         

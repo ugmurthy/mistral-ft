@@ -41,7 +41,7 @@ const handleSubmit = (e) => {
       }
       <textarea 
          name="prompt" 
-         placeholder={`Ask ${aiRole}...`}
+         placeholder={`Ask RunGenie...`}
           
          className='hover:outline hover:outline-1 w-11/12 bg-gray-100 p-2 rounded-lg'
          onKeyUp={handleSubmit}

@@ -1,8 +1,10 @@
 import {validToken} from "../module/sessions.server"
 import {redirect} from "@remix-run/node"
 //import type { MetaFunction } from "@remix-run/node";
-import Disclaimer from "~/components/Disclaimer";
 import FixedCard from "~/components/FixedCard";
+import InputBox from "~/components/InputBox";
+import {pnt,randomSplit} from "../module/questions.server"
+import { useLoaderData } from "@remix-run/react";
 /* export const meta: MetaFunction = () => {
   return [
     { title: "My Coach" },
@@ -16,13 +18,14 @@ export async function loader({request}) {
   if (!user) {
     throw redirect("/login");
   }
+  const [ignore,rpnt] = randomSplit(pnt,4);
   console.log("Index Loader:user Authenticated ",user.name, ((user.exp-Date.now())/1000/60/60).toFixed(2),"hours left");
-  return null;
+  return {rpnt};
 }
 
 
 export default function Index() {
-
+/* 
   const pnt = [
     {
       "prompt": "I am a newbie and looking help, How can you help?",
@@ -42,8 +45,9 @@ export default function Index() {
     },
     
   ]
-  
-  const fixedCards = pnt.map((c,i)=>{
+   */
+  const {rpnt}=useLoaderData()
+  const fixedCards = rpnt.map((c,i)=>{
     const url = `/coach?prompt=${c.prompt}&role=Coach`;
     return <FixedCard key={i} content={c.prompt} title={c.title} url={url}></FixedCard>
   })
@@ -54,17 +58,22 @@ export default function Index() {
       <div className="flex justify-center">
       <img src="AI_Coach.png" width="120" height="120" alt="Ai Coach"/>
       </div>
-      <div className="opacity-70 pb-3 text-xl font-bold flex justify-center"><span className="font-bold text-orange-500 pr-2">Mistral AI_</span> based Coach for Recreational Runners</div>
+      <div className="opacity-70 pb-3 text-xl font-bold flex justify-center">AI based Assistant for Recreational Runners</div>
       
       <div className="flex flex-wrap justify-center gap-4">
       {fixedCards}
       </div>
-
-      <div className="pt-10">
-      <Disclaimer></Disclaimer>
-      </div>
+      <div className="pb-28"></div>
+      <InputBox aiRole={""} allowEval={""}></InputBox>
+      
       </div>
     
     </div>
   );
 }
+
+/*
+<div className="pt-10">
+      <Disclaimer></Disclaimer>
+      </div>
+*/
