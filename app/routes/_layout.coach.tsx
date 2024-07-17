@@ -3,7 +3,7 @@ import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {  Link, useLoaderData } from "@remix-run/react";
 //import Prompt from '../other_files/Prompt'
 import {redirect } from "@remix-run/node";
-
+import {db} from "../module/xata.server"
 import {  useEffect, useState } from "react";
 //import _ from "lodash";
 import IconAndDisplay from "~/components/IconAndDisplay";
@@ -42,7 +42,7 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     } catch(e){
       console.log("\tError parsing features");
       // set defaults
-      features={features:{evaluate:false,temperature:0.7,max_tokens:2000}}
+      features={features:{evaluate:false,temperature:0.2,max_tokens:3000}}
       console.log("Feature Default(as fallback) ",features)
     }
     
@@ -62,7 +62,7 @@ const [edata,setEdata]= useState([]); // indicates evaluation done
 //// Evaluation SCORE
 const [score,setScore]=useState("");
 const [evalDone,setEvalDone]=useState(false);
-console.log("Features ",features)
+//console.log("Features ",features)
 const allowEval=features.evaluate;
 
 //// Evaluation
@@ -120,7 +120,7 @@ useEffect(() => {
 
       //setChunks(prevData => [...prevData, event.data]);
       if (event.data.includes('[DONE]')) {
-        console.log("useEffect: Coach:FINETUNED We are all done! Closing EventSource...")
+        //console.log("useEffect: Coach:FINETUNED We are all done! Closing EventSource...")
         setDone(true);
         eventSource.close();
       } else {
@@ -146,7 +146,7 @@ useEffect(() => {
     eventSource.onmessage = event => {
       //setChunks(prevData => [...prevData, event.data]);
       if (event.data.includes('[DONE]')) {
-        console.log("useEffect: Coach:ORIGINAL We are all done! Closing EventSource...")
+        //console.log("useEffect: Coach:ORIGINAL We are all done! Closing EventSource...")
         setEvalDone(true)
         eventSource.close();
       } else {
@@ -176,7 +176,7 @@ useEffect(() => {
     const jsonQA = {question:prompt, answer01:content, answer02:content}
 
     const urlScore = `/score?prompt=${JSON.stringify(jsonQA)}&role=Evaluate`
-    console.log("URL ",urlScore);
+    //console.log("URL ",urlScore);
     //const response = await fetch(urlScore); // returns json with score
     //console.log(response)
     setScore(urlScore);
@@ -194,18 +194,36 @@ useEffect(() => {
 //// Write questions to db on xata.io
 useEffect(() => {
   async function writeQuestion() {
-    const jsonQA = {prompt, response:content, stats, userId:""}
-    const urlQA = `/xata.io`
-    //console.log("URL ",urlQA);
-    //const response = await fetch(urlWrite); // returns json with score
-    console.log(jsonQA)
+    // userId is ugmurthy@gmail.com
+    const jsonQA = {question:prompt, 
+                    answer:content, 
+                    stats:JSON.stringify(stats), 
+                    userId:"rec_cqahbpi4br5n82p6r7c0"}
+    /// 1. Write to xata.io table qas via formData
+      // 1.1. Create formData
+      const formData = new FormData();
+      // 1.2. Append data to formData
+      for (const key in jsonQA) { // jsonQA is the object containing the data to be sent
+        formData.append(key, jsonQA[key]);
+        console.log("Key ",key," Value ",key==="userId"?jsonQA[key]:"--");
+        }
+        // 1.3. Send formData to server
+        const urlInsertQA = `/api/v2/addQA`
+
+        // 1.4. Send formData to server
+        const ret_val = await fetch(urlInsertQA, { 
+          method: 'POST',
+           body: formData,
+         });
+        // 1.5. Log response
+        console.log("Retval : QA insert :", await ret_val.json());
+  
     }
   if ( done) {
-    console.log("Writing to db")
-    
+    //console.log("Writing to db") 
     writeQuestion();
     return () => {
-     console.log("Writing done!")
+    // console.log("Writing done!")
     };
   }
 }, [ done]);

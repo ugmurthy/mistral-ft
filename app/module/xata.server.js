@@ -199,4 +199,41 @@ db.findTokendBySelector = async (selector) => {
         return null
     }
 }
+
+///QA : table name : qas
+/// columns : [id,question:string,answer:string,stats:string,userId:link(users)]
+
+db.addQA = async (jsonQA) => {
+    // add user to database (INSERT INTO qas (question, answer, stats))
+    /* returns {
+         "id": "rec_cq8gubfhqm2k22v7g3u0",
+        "xata": {
+            "createdAt": "2024-07-12T11:10:37.847892Z",
+            "updatedAt": "2024-07-12T11:10:37.847892Z",
+            "version": 0
+        }
+    }
+  */
+    const body = JSON.stringify(jsonQA);
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.XATA_API_KEY}`
+          },
+            body: body  // body data type must match "Content-Type" header
+        }
+    const URL= process.env.XATA_URL+"/tables/qas/data?columns=id"
+    const response = await fetch(URL, options);
+    if (response.ok) {
+        const data = await response.json()
+        return data
+    } else {
+        console.log("Error inserting record to qas table",await response.json())
+        return null
+    }
+}
+
+
+
 export default db
