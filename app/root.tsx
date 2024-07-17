@@ -22,13 +22,42 @@ export const meta: MetaFunction = () => {
       title: 'RunGenie',
     },
     {
+      property: 'og:title',
+      content: 'RunGenie'
+    },
+    {
+      property: 'og:description',
+      content: 'RunGenie - A Personal Assistant for Recreational Runners'
+    },
+    {
+      property: 'og:image',
+      content: '/AI_Coach.png'
+    },
+    {
+      property: 'og:url',
+      content: 'https://rungenie.vercel.app'
+    },
+    {
+      property: 'og:type',
+      content: 'WebApp'
+    },
+    {
       name: 'description',
       content:
-        'A Personal Assistant for Amateur Runners',
+        'A Personal Assistant for Recreational Runners',
     },
     {image:"/AI_Coach.png"}
   ];
 };
+/*
+<meta property="og:title" content="{{Your Website Title}}">
+<meta property="og:description" content="{{Brief description of your website}}">
+<meta property="og:image" content="{{URL to your logo image}}">
+<meta property="og:url" content="{{URL of the webpage}}">
+<meta property="og:type" content="website">
+
+*/
+
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: tailwindCSS }];
 
