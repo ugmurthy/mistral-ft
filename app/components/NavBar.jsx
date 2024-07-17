@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react"
 import Avatar from './Avatar'
 
 function NavBar() {
-  const VERSION = 'V0.11 17Jul24'
+  const VERSION = 'V0.12 17Jul24'
   return (
     <div className="navbar bg-base-100">
   <div className="flex-1">
