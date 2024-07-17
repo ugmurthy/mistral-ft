@@ -196,7 +196,7 @@ useEffect(() => {
   async function writeQuestion() {
     const jsonQA = {prompt, response:content, stats, userId:""}
     const urlQA = `/xata.io`
-    console.log("URL ",urlQA);
+    //console.log("URL ",urlQA);
     //const response = await fetch(urlWrite); // returns json with score
     console.log(jsonQA)
     }
