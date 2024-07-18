@@ -64,7 +64,7 @@ export default function Index() {
       {fixedCards}
       </div>
       <div className="pb-28"></div>
-      <InputBox aiRole={""} allowEval={""}></InputBox>
+      <InputBox aiRole={"Coach"} allowEval={""}></InputBox>
       
       </div>
     

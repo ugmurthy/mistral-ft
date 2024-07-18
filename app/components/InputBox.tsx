@@ -26,6 +26,7 @@ const handleSubmit = (e) => {
       ref={formRef}
       method="GET"
       className="p-2 shadow-2xl flex-grow fixed bottom-10 left-1/2 m-0 -translate-x-1/2 transform rounded-lg bg-gray-100 w-11/12 "
+      action='/coach'
       
     >
       <input name="role" defaultValue={aiRole} hidden/>  
