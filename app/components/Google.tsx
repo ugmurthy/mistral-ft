@@ -31,7 +31,7 @@ function Component() {
     }, [codeResponse]);
 
     return (
-        <div className='p-10'>
+        <div className=''>
         <div className='flex  justify-center '>
         <button className="btn btn-ghost btn-sm md:btn-md  border-2 border-blue-500" onClick={() => login()}>
         

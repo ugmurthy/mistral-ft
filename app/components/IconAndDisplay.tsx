@@ -31,7 +31,7 @@ export default function IconAndDisplay({content,prompt,stats,user="",evaluate=fa
       </div>
   
       <div
-          className="p-2 flex-grow resize-none focus:outline-none  border border-1  rounded-md"
+          className="p-2 flex-grow  focus:outline-none  border border-1  rounded-md"
         >
        <MarkDown markdown={text} className={textClass}></MarkDown>
        <CommandCopy txt={text} btnTxt="Copy">{JSON.stringify(_stats)}</CommandCopy>

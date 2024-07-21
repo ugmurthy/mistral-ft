@@ -20,11 +20,12 @@ export default function CommandCopy({txt,children, btnTxt="Copy", color="black"}
         copyToClipBoard();
       }
       return (
-        <div className='tooltip tooltip-left' data-tip={datatip}>
-        <button className=" btn btn-xs btn-ghost " onClick={handleCopy2Clipboard}>
+        <div className='flex ' >
+        <button className="tooltip tooltip-left btn btn-xs btn-ghost text-left" onClick={handleCopy2Clipboard} data-tip={datatip} >
           <Copy></Copy>
-             <div className="opacity-60 text-xs font-thin">{children}</div>
+             
         </button>
+        <div className=" opacity-60 text-xs font-thin text-left">{children}</div>
         </div>
         )
     }

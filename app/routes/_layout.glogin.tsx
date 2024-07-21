@@ -1,6 +1,6 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect, useLoaderData } from "@remix-run/react";
-import Login from "~/components/Google";
+import Google from "~/components/Google";
 import { addAuthToken, createLoginSession, getGoogleProfile, getUserId, loginGoogleUser } from "../module/session/session.server"
 //import { createTokenSession, validToken } from "~/module/sessions.server";
 import { z } from "zod";
@@ -35,7 +35,7 @@ export async function action(args:ActionFunctionArgs) {
         return null;
     }
 }
-
+/* 
 export async function loader(args:LoaderFunctionArgs) {
         const userId = await getUserId(args.request);
         //console.log("LOADER: /login userId ",userId)
@@ -50,7 +50,8 @@ export async function loader(args:LoaderFunctionArgs) {
     const {google_client_id} = useLoaderData();
         return (
             
-            <Login gid={google_client_id} />
+            <Google gid={google_client_id} />
            
         );
     }
+     */
