@@ -1,10 +1,12 @@
-import {validToken} from "../module/sessions.server"
+//import {validToken} from "../module/sessions.server bu"
 import {redirect} from "@remix-run/node"
 //import type { MetaFunction } from "@remix-run/node";
 import FixedCard from "~/components/FixedCard";
 import InputBox from "~/components/InputBox";
 import {pnt,randomSplit} from "../module/questions.server"
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useRouteLoaderData } from "@remix-run/react";
+import { requireUserId } from '../module/session/session.server';
+import  db  from '../module//xata.server';
 /* export const meta: MetaFunction = () => {
   return [
     { title: "My Coach" },
@@ -14,39 +16,26 @@ import { useLoaderData } from "@remix-run/react";
  */
 
 export async function loader({request}) {
-  const user = await validToken(request);
+  /* const user = await validToken(request);
   if (!user) {
     throw redirect("/login");
+  } */
+  const userId = await requireUserId(request);
+  if (!userId) {
+    throw redirect("/login");
   }
+  
   const [ignore,rpnt] = randomSplit(pnt,4);
-  console.log("Index Loader:user Authenticated ",user.name, ((user.exp-Date.now())/1000/60/60).toFixed(2),"hours left");
-  return {rpnt};
+  console.log("Index Loader:user Authenticated ",userId);
+  
+  //console.log("Index:user Authenticated ",user);
+  return {rpnt };
 }
 
 
 export default function Index() {
-/* 
-  const pnt = [
-    {
-      "prompt": "I am a newbie and looking help, How can you help?",
-      "title": "Seek Help!"
-    },
-    {
-      "prompt": "Give me a weekly plan for lower body strength training formatted as a table",
-      "title": "Training Plan"
-    },
-    {
-      "prompt": "What impact does iron deficiency have on running?",
-      "title": "Nutrition"
-    },
-    {
-      "prompt": "Explain theory of Relativity",
-      "title": "Off Topic"
-    },
-    
-  ]
-   */
   const {rpnt}=useLoaderData()
+  
   const fixedCards = rpnt.map((c,i)=>{
     const url = `/coach?prompt=${c.prompt}&role=Coach`;
     return <FixedCard key={i} content={c.prompt} title={c.title} url={url}></FixedCard>

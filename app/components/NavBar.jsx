@@ -1,9 +1,10 @@
 import Theme from "./Theme"
 import { Link } from "@remix-run/react"
-import Avatar from './Avatar'
+import Avatar from './MenuIcon'
+import MenuIcon from "./MenuIcon"
 
 function NavBar() {
-  const VERSION = 'V0.12 17Jul24'
+  const VERSION = 'V0.13 21Jul24'
   return (
     <div className="navbar bg-base-100">
   <div className="flex-1">
@@ -17,7 +18,7 @@ function NavBar() {
     <div className="dropdown dropdown-end">
       <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
         
-          <Avatar tooltip="Athlete" iconTxt="At" orientation="tooltip-left"></Avatar>
+          <MenuIcon tooltip="Athlete" iconTxt="At" orientation="tooltip-left"></MenuIcon>
         
       </div>
       <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">

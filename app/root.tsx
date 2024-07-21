@@ -5,16 +5,19 @@ import {
   //LiveReload,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
   useRouteError,
 } from '@remix-run/react';
-
+import db from 'app/module/xata.server'
 import { PageTransitionProgressBar } from './components/progress'
 //import { getUser } from './modules/session/session.server';
 import tailwindCSS from './tailwind.css?url'
-import { sleep } from './helpers/util';
-import Theme from './components/Theme';
+//import { sleep } from './helpers/util';
+//import Theme from './components/Theme';
+import { getUser, requireUserId } from './module/session/session.server';
+import { get } from 'lodash';
 
 export const meta: MetaFunction = () => {
   return [
@@ -61,10 +64,10 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: tailwindCSS }];
 
-export async function loader() {
-   await sleep(2000);
-   const user="tom";
-  return { user };
+export async function loader({request}) {
+  const user = await getUser(request);
+  
+  return {  user };
 }
 
 export default function Component() {

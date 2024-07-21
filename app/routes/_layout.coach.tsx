@@ -1,14 +1,15 @@
 
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
-import {  Link, useLoaderData } from "@remix-run/react";
+import {  Link, useLoaderData, useRouteLoaderData } from "@remix-run/react";
 //import Prompt from '../other_files/Prompt'
 import {redirect } from "@remix-run/node";
-import {db} from "../module/xata.server"
+//import db from "../module/xata.server"
 import {  useEffect, useState } from "react";
 //import _ from "lodash";
 import IconAndDisplay from "~/components/IconAndDisplay";
 import InputBox from "~/components/InputBox";
-import { validToken } from "../module/sessions.server";
+
+import { requireUserId } from "~/module/session/session.server";
 function getURLdetails(request:Request) {
 	
     const url = new URL(request.url);
@@ -24,25 +25,24 @@ function getURLdetails(request:Request) {
 
 export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
    
-  const user = await validToken(request);
-  if (!user) {
-    throw redirect("/login");
-  }
-  console.log("Index Loader:user Authenticated ",user.name, ((user.exp-Date.now())/1000/60/60).toFixed(2),"hours left");
+
+    const userId = await requireUserId(request);
+    if (!userId) {  // if no user is logged in
+      throw redirect("/login");
+      }
+  console.log("Loader /coach :user Authenticated: ",userId);
   
   const {prompt,role,e_val} = getURLdetails(request);
     let myCoach = process.env.MYCOACH;
-    let features={}
-   
-   
-   
+    
+    let features={}     
     try {
     features={...JSON.parse(myCoach)};
     console.log("Parsed  RunGenie features...",features);
     } catch(e){
       console.log("\tError parsing features");
       // set defaults
-      features={features:{evaluate:false,temperature:0.2,max_tokens:3000}}
+      features={features:{evaluate:false,temperature:0.3,max_tokens:3000}}
       console.log("Feature Default(as fallback) ",features)
     }
     
@@ -55,6 +55,10 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
 }
 
 export default function Component(){
+const {user} = useRouteLoaderData("root");
+//const {rpnt} = useRouteLoaderData("route");
+console.log("User: ",user.name);
+//console.log("RPNT: ",rpnt);
 const {role,prompt,e_val,features} = useLoaderData<typeof loader>(); 
 const [data,setData]= useState([]);
 const [done,setDone]= useState(false); // indicates if inference is done
@@ -194,18 +198,17 @@ useEffect(() => {
 //// Write questions to db on xata.io
 useEffect(() => {
   async function writeQuestion() {
-    // userId is ugmurthy@gmail.com
     const jsonQA = {question:prompt, 
                     answer:content, 
-                    stats:JSON.stringify(stats), 
-                    userId:"rec_cqahbpi4br5n82p6r7c0"}
+                    stats:JSON.stringify(stats), userId:user.id}
+                   // userId:"rec_cqahbpi4br5n82p6r7c0"}
     /// 1. Write to xata.io table qas via formData
       // 1.1. Create formData
       const formData = new FormData();
       // 1.2. Append data to formData
       for (const key in jsonQA) { // jsonQA is the object containing the data to be sent
         formData.append(key, jsonQA[key]);
-        console.log("Key ",key," Value ",key==="userId"?jsonQA[key]:"--");
+        //console.log("Key ",key," Value ",key==="userId"?jsonQA[key]:"--");
         }
         // 1.3. Send formData to server
         const urlInsertQA = `/api/v2/addQA`
