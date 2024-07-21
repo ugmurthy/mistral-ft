@@ -17,7 +17,7 @@ export const pnt = [
       "title": "Off Topic"
     },
     {
-      "prompt": "Write a sysnosis on Chaos Theory",
+      "prompt": "Write a sysnopsis on Chaos Theory",
       "title": "Off Topic"
     },
     {
@@ -59,7 +59,12 @@ export const pnt = [
 },
 {"prompt":"How can I effectively transition from half marathon training to full marathon training?",
   "title": "Training"
-}
+},
+{"prompt":"What are some effective strategies for incorporating speed work into my long-distance training plan?",
+  "title": "Training"},
+  {"prompt":"What are some effective strategies to speed up my recovery from hard workouts",
+    "title": "Recovery"
+  }
     
   ]
 

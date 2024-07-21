@@ -4,9 +4,9 @@ import {redirect} from "@remix-run/node"
 import FixedCard from "~/components/FixedCard";
 import InputBox from "~/components/InputBox";
 import {pnt,randomSplit} from "../module/questions.server"
-import { useLoaderData, useRouteLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { requireUserId } from '../module/session/session.server';
-import  db  from '../module//xata.server';
+
 /* export const meta: MetaFunction = () => {
   return [
     { title: "My Coach" },

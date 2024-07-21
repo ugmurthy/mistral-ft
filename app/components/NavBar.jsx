@@ -4,7 +4,7 @@ import Avatar from './MenuIcon'
 import MenuIcon from "./MenuIcon"
 
 function NavBar() {
-  const VERSION = 'V0.13 21Jul24'
+  const VERSION = 'V0.14 21Jul24'
   return (
     <div className="navbar bg-base-100">
   <div className="flex-1">

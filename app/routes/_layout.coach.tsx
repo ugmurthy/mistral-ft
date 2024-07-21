@@ -244,14 +244,18 @@ if (prompt==="") {
 if (content) {
   return (
   <div className="flex flex-col justify-center">
-      <IconAndDisplay prompt={prompt} content="" stats={stats}/>
-      {score?<div className="flex justify-center">
+      <IconAndDisplay prompt={prompt} content="" stats={stats} user={user}/>
+      {score
+        ? <div className="flex justify-center">
       <Link 
       className="px-4 text-center underline bg-orange-300 text-blue-700 rounded-md" to={score} 
       target="_blank" rel="noopener noreferrer"
-      >
+       >
         See Comparative Scores  : Fails sometimes </Link>
-        </div>:""}
+        </div>
+        : ""
+      }
+
       <IconAndDisplay content={content} prompt="" stats={stats}/>
       {eContent?<IconAndDisplay content={eContent} prompt="" stats={estats} evaluate={evaluate}/>:""}
 

@@ -1,9 +1,14 @@
 import CommandCopy from "./CommandCopy";
 import MarkDown from "./MarkDown";
 
-export default function IconAndDisplay({content,prompt,stats,evaluate=false}) {
-    const tooltip = evaluate?"Original Model":content?"FineTuned Model:":'Athlete' 
-    const cls = "bg-neutral-600 w-10 rounded-full"
+export default function IconAndDisplay({content,prompt,stats,user="",evaluate=false}) {
+    const tooltip = evaluate 
+                  ? "Original Model"
+                  :content
+                        ? "FineTuned Model:"
+                        : user?.name 
+    const imgUrl = user.verified_email?user.picture.url:"/AI_Coach.png"
+    const cls = "bg-gray-200 w-10 rounded-full"
     const avatarClass = cls + " " + (evaluate?"text-yellow-500":content
                             ? "text-orange-500"
                             :"text-blue-500 w-10")
@@ -18,7 +23,9 @@ export default function IconAndDisplay({content,prompt,stats,evaluate=false}) {
         <div className="mr-3">
           <div className="avatar  placeholder tooltip tooltip-right" data-tip={tooltip}>
             <div className={avatarClass}>
-                <span className="text-sm">{iconTxt}</span>
+               
+                <img src={imgUrl} alt={user?.name} />
+               
             </div>
           </div>
       </div>
