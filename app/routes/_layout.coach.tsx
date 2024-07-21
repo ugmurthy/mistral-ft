@@ -30,7 +30,7 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
     if (!userId) {  // if no user is logged in
       throw redirect("/login");
       }
-  console.log("Loader /coach :user Authenticated: ",userId);
+  console.log("Loader route /coach :user Authenticated: ",userId);
   
   const {prompt,role,e_val} = getURLdetails(request);
     let myCoach = process.env.MYCOACH;
