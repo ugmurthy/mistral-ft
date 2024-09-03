@@ -30,7 +30,7 @@ export async function action(args: ActionFunctionArgs) {
     // write records to xata.io table qas
     let write_qas = 0;
     try {
-        write_qas = parseInt(features.write_qa)
+        write_qas = parseInt(features.write_qas)
         console.log("/api/v2/addQA: write_qa from features ",write_qas)
     } catch (e) {
         write_qas = 0;
