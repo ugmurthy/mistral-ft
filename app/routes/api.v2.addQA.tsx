@@ -38,6 +38,8 @@ export async function action(args: ActionFunctionArgs) {
     }
     if(write_qas!==1) {
         console.log("/api/v2/addQA: Not logging QAs")
+    } else {
+        console.log("/api/v2/addQA: Logging QAs")
     }
 
     
@@ -64,7 +66,7 @@ export async function action(args: ActionFunctionArgs) {
             const ret_val = await setKV(result.data.cId, JSON.stringify(message_array));
             console.log("/api/v2/addQA: DIFFERENT question")
             console.log("/api/v2/addQA: message_array, memory len = ",memory.length);
-            dumpMessage(message_array);
+            //dumpMessage(message_array);
         }
         
         
