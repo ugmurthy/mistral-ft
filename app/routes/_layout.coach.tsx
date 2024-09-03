@@ -324,6 +324,7 @@ if (prompt===""||typeof prompt === 'undefined') {
 }
 
 if (content) {
+  console.log("Coach component: qaId: ",qaId)
   return (
   <div className="flex flex-col justify-center pt-20 pb-4">
      
