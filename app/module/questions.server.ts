@@ -64,6 +64,13 @@ export const pnt = [
   "title": "Training"},
   {"prompt":"What are some effective strategies to speed up my recovery from hard workouts",
     "title": "Recovery"
+  },{
+    "prompt":"How can I improve my running economy to increase my speed and endurance?",
+    "title": "Running Economy"  
+  },{
+    "prompt":"Can you explain details of how to grade muscular strength of a marathoner",
+    "title": "Strength Assessment"
+
   }
     
   ]

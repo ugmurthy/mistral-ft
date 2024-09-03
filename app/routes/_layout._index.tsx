@@ -21,12 +21,13 @@ export async function loader({request}) {
     throw redirect("/login");
   } */
   const userId = await requireUserId(request);
+  console.log("Index Loader:user Authenticated ",userId);
   if (!userId) {
     throw redirect("/login");
   }
   
   const [ignore,rpnt] = randomSplit(pnt,4);
-  console.log("Index Loader:user Authenticated ",userId);
+  //console.log("Index Loader:user Authenticated ",userId);
   
   //console.log("Index:user Authenticated ",user);
   return {rpnt };
@@ -42,7 +43,7 @@ export default function Index() {
   })
   
   return (
-    <div className="container mx-auto  px-4 ">
+    <div className="container mx-auto  px-4 pt-20">
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <div className="flex justify-center">
       <img src="AI_Coach.png" width="120" height="120" alt="Ai Coach"/>

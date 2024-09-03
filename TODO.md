@@ -6,7 +6,7 @@ V0.14 21JUL2024
 - chat assistant for running related questions
 - login with google
 - stores user data with veriified email
-- stores chat history per user
+- stores chat history per user (Only Q/A for now)
 - login with email
 - stores user data but unverified email
 - client allows copying prompt, response
@@ -36,6 +36,12 @@ V0.14 21JUL2024
 ✅✅✅✅✅✅✅✅✅✅
 
 - Cosmetic:
-  - ✅adjust login screen - too much gap on top
-  - ✅repair login route - somewhere /login is returning to /glogin
-  - enclose login in a rounded rectangle
+
+  - ✅ adjust login screen - too much gap on top
+  - ✅ repair login route - somewhere /login is returning to /glogin
+  - ✅ enclose login in a rounded rectangle
+
+- 4/AUG/2024
+  - ✅ add a button to start new conversation
+  - modify loader /coach to create new coversation record in xata if prompt="", role=""
+  - check out value of multiple user/assistant object in messages {messages: [{role: "user", content: prompt}, {role: "assistant", content: response}]} using httpie

@@ -77,7 +77,7 @@ CASE:2. If user DOES NOT exist, then create a new user
   
 CASE:3. If user exists, then check if user has verified_email=false
   a. if verified_email=false, then update user with verified_email=true
-  b. update name, picture of needed 
+  b. update name, picture if needed 
   c. Update user record
 
 4. create a new token
@@ -145,16 +145,15 @@ export async function loginGoogleUser({email,name,verified_email,picture}:Google
   return {user,error:""};
 }
 
-
-
 export async function logout(request: Request) {
     const session = await getUserSession(request);
+    console.log('session: logging out...')
     return redirect('/login', { headers: { 'Set-Cookie': await destroySession(session) } });
   }
   
-  function getUserSession(request: Request) {
+function getUserSession(request: Request) {
     return getSession(request.headers.get('Cookie'));
-  }
+}
   
   const sessionSecret = process.env.SESSION_SECRET;
   if (!sessionSecret) {
@@ -162,7 +161,7 @@ export async function logout(request: Request) {
   }
   const { getSession, commitSession, destroySession } = createCookieSessionStorage({
     cookie: {
-      name: 'rag-session',
+      name: 'rungenie-session',
       secure: process.env.NODE_ENV === 'production',
       secrets: [sessionSecret],
       sameSite: 'lax',
@@ -171,6 +170,7 @@ export async function logout(request: Request) {
       httpOnly: true,
     },
   });
+
   export async function createUserSession(user: User, headers = new Headers()) {
     const session = await getSession();
     session.set('userId', user?user.id:null);
@@ -335,4 +335,68 @@ export async function getGoogleProfile(request:Request) {
       }
 
   return userdata;
+}
+
+
+// add conversationId to current user Session
+export async function createConversationSession(cId,request, headers = new Headers()) {
+  const session = await getUserSession(request);
+  session.set('conversationId', cId);
+  console.log("f:createConversationSession: Create Session w/ConversationId for userId ",await getUserId(request))
+  headers.set('Set-Cookie', await commitSession(session));
+  //console.log('createAPISession ',apikey);
+  return headers;
+}
+
+export async function getConversationSession(request:Request) {
+  const session = await getUserSession(request);
+   const conversationId = session.get('conversationId');
+   return conversationId; // return conversationId
+}
+
+// set features to current user Session as a JSON string
+export async function setFeaturesSession(features,request, headers = new Headers()) {
+  let f_string = ""
+  if (!(typeof features === 'string')) {
+    //console.log("f:setFeaturesSession: features is not a string ",features)
+    f_string = JSON.stringify(features);
+  } else {
+    f_string = features;
+  }
+  const session = await getUserSession(request);
+  session.set('features', f_string);
+  console.log("f:setFeaturesSession: Create Session w/features for userId ",await getUserId(request))
+  headers.set('Set-Cookie', await commitSession(session));
+  //console.log('createAPISession ',apikey);
+  return headers;
+}
+
+// get features from current user Session as a json object
+export async function getFeaturesSession(request:Request) {
+  const session = await getUserSession(request);
+   const features = session.get('features');
+   if (features){
+    return JSON.parse(features); // return features
+   } else {
+    return await getDefaultFeatures();
+   }
+}
+
+// get default features
+// features to use // work in progress
+const DEFAULT_FEATURES={features:{evaluate:false,temperature:0.6,max_tokens:2000,memory:0}}
+export async function getDefaultFeatures() {
+  let myCoach = process.env.MYCOACH;
+  myCoach = myCoach?.replaceAll("\\","");
+  let features={}     
+  try {
+  features={...JSON.parse(myCoach)};
+  //console.log("f:getDefaultFeatures: Parsed  RunGenie features...",features);
+  } catch(e){
+    console.log("f:getDefaultFeatures: Error parsing features");
+    // set defaults
+    features=DEFAULT_FEATURES
+    console.log("f:getDefaultFeatures: Feature Default(as fallback) ",features)
+  }
+  return features;
 }

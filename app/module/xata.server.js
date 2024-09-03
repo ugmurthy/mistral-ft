@@ -202,7 +202,40 @@ db.findTokendBySelector = async (selector) => {
 
 ///QA : table name : qas
 /// columns : [id,question:string,answer:string,stats:string,userId:link(users)]
-
+db.updateQA = async (jsonThumbsUp) => {
+    // updates field thumbsup in qas table (UPDATE qas SET thumbsup = true/false WHERE id = id)
+    /* returns {
+    "id": "rec_cqjjuhm3h9bv4g9iu210",
+    "xata": {
+            "createdAt": "2024-07-29T07:05:42.406066Z",
+            "updatedAt": "2024-07-29T11:36:53.53872Z",
+            "version": 1
+            }
+        }
+    */
+   const thumbsup = jsonThumbsUp.thumbsup;
+   const id = jsonThumbsUp.qasId;
+   const body = JSON.stringify({thumbsup});
+   const options = {
+       method: 'PATCH',
+       headers: {
+           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${process.env.XATA_API_KEY}`
+         },
+           body: body  // body data type must match "Content-Type" header
+       }
+   const URL= process.env.XATA_URL+"/tables/qas/data/"+id
+   console.log("URL: ",URL)
+   console.log("Body :",body)
+   const response = await fetch(URL, options);
+   if (response.ok) {
+       const data = await response.json()
+       return data
+   } else {
+       console.log("Error updating thumbsup in qas table ",id)
+       return await response.json();
+   }
+}
 db.addQA = async (jsonQA) => {
     // add user to database (INSERT INTO qas (question, answer, stats))
     /* returns {
@@ -230,6 +263,42 @@ db.addQA = async (jsonQA) => {
         return data
     } else {
         console.log("Error inserting record to qas table",await response.json())
+        return null
+    }
+}
+
+db.addConversation = async (jsonConversation) => {
+    // add user to database (INSERT INTO conversation (userId))
+    
+    /* 
+    body = {
+        "userId":"rec_cqahbpi4br5n82p6r7c0"
+        }
+    returns {
+         "id": "rec_cq8gubfhqm2k22v7g3u0",
+        "xata": {
+            "createdAt": "2024-07-12T11:10:37.847892Z",
+            "updatedAt": "2024-07-12T11:10:37.847892Z",
+            "version": 0
+        }
+    }
+  */
+    const body = JSON.stringify(jsonConversation);
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.XATA_API_KEY}`
+          },
+            body: body  // body data type must match "Content-Type" header
+        }
+    const URL= process.env.XATA_URL+"/tables/conversations/data?columns=id"
+    const response = await fetch(URL, options);
+    if (response.ok) {
+        const data = await response.json()
+        return data.id
+    } else {
+        console.log("Error inserting record to conversation table",await response.json())
         return null
     }
 }

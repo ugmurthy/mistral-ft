@@ -1,22 +1,31 @@
 import Theme from "./Theme"
 import { Link } from "@remix-run/react"
-import Avatar from './MenuIcon'
 import MenuIcon from "./MenuIcon"
-
+import New from './New'
 function NavBar() {
-  const VERSION = 'V0.14 21Jul24'
+  const VERSION = 'V0.16 3-Sep-2024'
+  /*
+  Version history:
+  V0.15 : Basic version 
+  V0.16 : Added New conversation button
+        : added memory feature using Vercel KV
+        : added question evaluation and suggestion
+        : added question history to context using memory
+  */
   return (
+    <div className="fixed left-0 top-0 z-50 w-full  bg-base-200 shadow-md">
     <div className="navbar bg-base-100">
   <div className="flex-1">
     
     <span className="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-red-700  to-orange-300"><Link to="/">RunGenie</Link></span><span className="pl-4 mt-2 text-xs font-thin text-gray500">{VERSION}</span>
   </div>
   <div className="flex-none gap-2">
+    <New></New>
     <div className="form-control">
       <Theme />
     </div>
     <div className="dropdown dropdown-end">
-      <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+      <div tabIndex={0} role="button" className="btn btn-ghost  ">
         
           <MenuIcon tooltip="Athlete" iconTxt="At" orientation="tooltip-left"></MenuIcon>
         
@@ -33,6 +42,7 @@ function NavBar() {
       </ul>
     </div>
   </div>
+</div>
 </div>
   )
 }

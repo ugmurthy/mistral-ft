@@ -14,10 +14,11 @@ import db from 'app/module/xata.server'
 import { PageTransitionProgressBar } from './components/progress'
 //import { getUser } from './modules/session/session.server';
 import tailwindCSS from './tailwind.css?url'
+import 'react-toastify/dist/ReactToastify.css';
 //import { sleep } from './helpers/util';
 //import Theme from './components/Theme';
-import { getUser, requireUserId } from './module/session/session.server';
-import { get } from 'lodash';
+import { getUser,  } from './module/session/session.server';
+import { ToastContainer, Zoom } from 'react-toastify';
 
 export const meta: MetaFunction = () => {
   return [
@@ -92,6 +93,21 @@ function Document({ children }: { children: React.ReactNode }) {
       <body className="bg-background dark:bg-darkBackground         text-lg text-text dark:text-darkText">
         <PageTransitionProgressBar />
         {children}
+        <ToastContainer
+position="bottom-center"
+autoClose={1000}
+limit={7}
+hideProgressBar
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="light"
+transition={Zoom}
+className="text-sm font-thin text-blue-700"
+/>
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -1,16 +1,24 @@
 import  { useRef } from 'react';
+import { useFetcher } from '@remix-run/react';
 import Up from './Up'
-import PrintIcon from './PrintIcon';
-const MyForm = ({aiRole, allowEval}) => {
-  const formRef = useRef(null);
 
+const MyForm = ({aiRole, allowEval,update}) => {
+  const formRef = useRef(null);
+  const fetcher = useFetcher();
+
+  
+  if (fetcher.data) {
+    console.log('inputbox ', fetcher.data);
+    update(fetcher.data);
+  }
   // const handleFetch = () => {
   //   formRef.current.dispatchEvent(
   //     new Event('submit', { cancelable: true, bubbles: true })
   //   );
   // };
 const handleFetch = () => {
-  formRef.current?.submit();
+  //formRef.current?.submit();
+  fetcher.submit(formRef.current);
 }
 const handleSubmit = (e) => {
     if (e.keyCode === 13) {
@@ -24,12 +32,11 @@ const handleSubmit = (e) => {
   The two responses are then evaluated by mistral-large model to arrive at a score!`
 //className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-lg"
   return (
-    <div>
-    <form
+    <fetcher.Form
       ref={formRef}
       method="GET"
       className="p-2 shadow-2xl flex-grow fixed bottom-10 left-1/2 m-0 -translate-x-1/2 transform rounded-lg bg-gray-100 w-11/12 "
-      action='/coach'
+      action={`/coach`}
       
     >
       <input name="role" defaultValue={aiRole} hidden/>  
@@ -55,10 +62,7 @@ const handleSubmit = (e) => {
         
       </div>
       </div>
-      
-    </form>
-    <PrintIcon> </PrintIcon>
-    </div>
+    </fetcher.Form>
   );
 };
 

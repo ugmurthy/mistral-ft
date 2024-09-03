@@ -1,18 +1,20 @@
 
 import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
-import {  useLoaderData, useRouteLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData, useRouteLoaderData } from "@remix-run/react";
+//import Prompt from '../other_files/Prompt'
 import {json, redirect } from "@remix-run/node";
-import {  useEffect,  useRef,  useState } from "react";
+//import db from "../module/xata.server"
+import {  useEffect, useRef, useState } from "react";
 //import _ from "lodash";
 import IconAndDisplay from "~/components/IconAndDisplay";
 import InputBox from "~/components/InputBox";
+import Up from '~/components/Up'
 import db from "../module/xata.server";
+
 import { createConversationSession, getConversationSession, getFeaturesSession, requireUserId, setFeaturesSession } from "~/module/session/session.server";
 import {  promptEvaluator } from "~/api/mistralAPI.server";
-import Memory from "~/components/Memory";
-
-
-function getURLdetails(request:Request) {	
+function getURLdetails(request:Request) {
+	
     const url = new URL(request.url);
     if (url.pathname !== '/favicon.ico') { 
         const role = url.searchParams.get("role") || "";
@@ -22,17 +24,24 @@ function getURLdetails(request:Request) {
 }
 } 
 
-export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{   
+
+
+export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
+   
+
   const userId = await requireUserId(request);
+  //console.log("/coach: user Authenticated: ",userId);
   if (!userId) {  // if no user is logged in
       throw redirect("/login");
       }
+  
   //parse the request to get prompt, role and evaluate
   let {prompt,role,e_val} = getURLdetails(request);
-  console.log("/coach: role ",role)
+
   // evaluate the question and generate followup question
+
   const evaluation = prompt ? await promptEvaluator(prompt) : {};
-  // features to use // work in progress
+  // // features to use // work in progress
   // let myCoach = process.env.MYCOACH;
   // myCoach = myCoach?.replaceAll("\\","");
   // let features={}     
@@ -50,28 +59,23 @@ export const loader:LoaderFunction = async ({request}:LoaderFunctionArgs )=>{
   let cId = await getConversationSession(request);
   const features = await getFeaturesSession(request);
 
-  // @TODO - I dont like the following line - need better way to detect new conversation
+  //console.log("/coach : features",features)
   // Is this is a new conversation?
   // url ends with /coach&role=Coach  or cId is undefined => new conversation
   const urlAry=request.url.split("/")
-  const newConversation = urlAry[urlAry.length-1]===`coach?role=${role}` || cId === undefined?true:false;
+  //console.log("/coach: URL Array",urlAry)
+  //@TODO - I dont like the following line - need better way to detect new conversation
+  const newConversation = urlAry[urlAry.length-1]==="coach?role=Coach" || cId === undefined?true:false;
   if (newConversation) { 
-    if (cId) {
-      console.log("/coach: We already have a cId ",cId)
-    } else {
-      // create new conversation id
-      cId = await db.addConversation({userId})
-      console.log("/coach: New Conversation",cId)
-    }
-    
-    
+    // create new conversation id
+    cId = await db.addConversation({userId})
+    console.log("/coach: New Conversation",cId)
     const headers = await setFeaturesSession(features,request)
-    console.log("/coach: role & prompt ",role,prompt)
+    //cId will be part of session when loader returns
     return json({role,prompt,e_val,cId,...features,evaluation},
       {headers: await createConversationSession(cId,request,headers)})
   } else {
     //console.log("/coach: Existing Conversation",cId)
-    console.log("/coach: role & prompt ",role,prompt)
     return json({role,prompt,e_val,cId,...features,evaluation})
   }
     
@@ -89,38 +93,62 @@ function FollowUp({children}) {
 
 export default function Component(){
 const {user} = useRouteLoaderData("root");
-const {role,prompt,e_val,cId,features,evaluation} = useLoaderData<typeof loader>(); 
+//const {rpnt} = useRouteLoaderData("route");
+//console.log("User: ",user.name);
+//console.log("RPNT: ",rpnt);
 
-//// Use the following code for fetcher.form in InputBox.tsx : does not work properly
-/* const [loaderData,setLoaderData]=useState(null);
-let role,prompt,e_val,cId,features,evaluation;
-if (loaderData) {
-  ({role,prompt,e_val,cId,features,evaluation} = loaderData)
-  console.log("/coach: loaderData elements ",role,prompt,e_val,cId,features,evaluation)
-} else {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  ({role,prompt,e_val,cId,features,evaluation} = useLoaderData())
-  console.log("/coach null loaderData")
-  console.log("/coach: USEloaderData elements ",role,prompt,e_val,cId,features,evaluation)
-}
- */const followUpQuestion = evaluation?evaluation.followUp:"" ;
-
+// relates to input box
+const fetcher = useFetcher();
+const formRef = useRef(null);
+// input box
+// eslint-disable-next-line react-hooks/rules-of-hooks
+const loaderData = fetcher.data?fetcher.data:useLoaderData();
+const {role,prompt,e_val,cId,features,evaluation} = loaderData;
+//const {role,prompt,e_val,cId,features,evaluation} = fetcher.data?fetcher.data:{role:"",prompt:"",e_val:"",cId:"",features:"",evaluation:""};
+//const {role,prompt,e_val,cId,features,evaluation} = useLoaderData<typeof loader>(); 
+const followUpQuestion = evaluation.followUp ;
 const [data,setData]= useState([]);
 const [done,setDone]= useState(false); // indicates if inference is done
 const [edata,setEdata]= useState([]); // indicates evaluation done
 const [qaId,setQAid]= useState(null); // indicates question/answer written to qas table.
 const [conversation,setConversation]=useState([]);
 const [conversationId,setConversationId]=useState(cId);  // conversation id
-const bottomRef = useRef<HTMLDivElement>(null);
+console.log("/Coach component: conversation len = ",conversation.length)
+console.log("/Coach component: conversation id  = ",conversationId)
+console.log("/Coach component:              cId = ",cId)
+console.log("/Coach component:           data = ",fetcher.data, useLoaderData())
 //// Evaluation SCORE
 const [score,setScore]=useState("");
 const [evalDone,setEvalDone]=useState(false);
 //console.log("Features ",features)
-const allowEval=features?features.evaluate:false;
+const allowEval=features.evaluate;
+
+//// Evaluation
+//const [chunks,setChunks]=useState([]);
+//const [isInfering,setIsInfering]=useState(false)
+
 const url = `/api/v2/mistral?prompt=${prompt}&role=${role}`
 //console.log(`Role:${role},prompt:${prompt}`);
 const urlEval = `/api/v2/mistral?prompt=${prompt}&role=Original`
+
 const evaluate=e_val?true:false
+//console.log("Evaluating? ",evaluate)
+
+////
+
+const handleFetch = () => {
+  //formRef.current?.submit();
+  fetcher.submit(formRef.current);
+}
+const handleSubmit = (e) => {
+  if (e.keyCode === 13) {
+      e.preventDefault();
+      handleFetch();
+    }    
+};
+
+////
+
 
 function jsonArray2Content(allJSON) {
   let content=''
@@ -158,28 +186,9 @@ function model(m) {
  
 // change in conversation useEffect
 // reset converation when cId changes
-useEffect(() => {
-  async function getMemory() {
-    const urlMemory = "/api/v2/memory"
-    const ret_val = await fetch(urlMemory);
-    const ret_val_json = await ret_val.json();
-    console.log("0. useEffect getMemory: ",ret_val_json?.memory.len)
-    setConversation(ret_val_json.memory);
-  }
-  //if (prompt) {
-    getMemory();
-  //}
-
-
-},[]) // run once on load
-
 
 // Inference UseEffect
 useEffect(() => {
-  const scrollBottom = () => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  
   if (prompt) {
     setScore("")
     const eventSource = new EventSource(url);
@@ -193,7 +202,6 @@ useEffect(() => {
       } else {
         setData(prevData => [...prevData, JSON.parse(event.data)]);
       } 
-      scrollBottom();
     };
 
     eventSource.onerror = error => {
@@ -260,11 +268,17 @@ useEffect(() => {
 }, [evalDone, done]);
 ///// SCORING useEffect
 
-
+/// REST conversation Array.
+// useEffect(() => {
+//   if (conversationId!==cId) {
+//     setConversation([]);
+//     setConversationId(cId);
+//     console.log("Coach component:RESET ARRAY:",cId)
+//   }
+// },[conversationId,cId])
 
 //// Write questions to db on xata.io
 useEffect(() => {
-  console.log(`2. UseEffect QA : [${cId}]`)
   async function writeQuestion() {
     const jsonQA = {question:prompt, 
                     answer:content, 
@@ -293,48 +307,62 @@ useEffect(() => {
         // there will be an error in dev mode as QA are not written to qas table
         const qaId = ret_val_json.id;
         setQAid(qaId);
-        //const newConversation = [prompt,content,qaId,cId]
-        //console.log("/coach: Component: memory len: ",memory.length)
-        //setConversation(memory) // update Array of conversations 
+        const newConversation = [prompt,content,qaId]
+        if (conversationId!==cId) {
+          console.log("Coach component:RESET ARRAY:",cId,conversationId)
+          setConversation([newConversation]);
+          setConversationId(cId);
+          
+        } else {
+          setConversation(preConversation =>[...preConversation,newConversation]) // update Array of conversations 
+        }
     }
   if (done) {
-    console.log("2. UseEffect Writing to db") 
+    //console.log("Writing to db") 
     writeQuestion();
-    //return () => {
+    return () => {
     // console.log("Writing done!")
-    //};
+    };
   }
 }, [ done]);
 ////
 
-/// REST conversation Array.
-useEffect(() => {
-  console.log(`3. UseEffect Conversation [${cId}] [${conversationId}]`)
-  if (conversationId!==cId) {
-    setConversation([]);
-    setConversationId(cId);
-    console.log("Coach component:RESET ARRAY:")
-  }
-},[conversationId,cId])
 
-if (prompt===""||typeof prompt === 'undefined') {
+
+if (prompt==="") {
   return (
-    <InputBox aiRole={role} allowEval={allowEval} ></InputBox>
+    <InputBox aiRole={role} allowEval={allowEval}/>
   )
 }
 
 if (content) {
   return (
-  <div className="flex flex-col justify-center pt-20 pb-4">
-     
-      <Memory memory={conversation} qaId={qaId} stats={stats} user={user}></Memory>
+  <div className="flex flex-col justify-center pt-20">
       <IconAndDisplay prompt={prompt} content="" stats={stats} user={user} />
       <IconAndDisplay content={content} prompt={prompt} stats={stats} qaId={qaId}/>
       {done && <FollowUp>{followUpQuestion}</FollowUp>}
-       
       <div className="pt-32 " ></div>
-      <InputBox aiRole={role} allowEval={allowEval}></InputBox>
-      <div ref={bottomRef} className="text-xs text-center font-thin">RunGenie can make mistakes. Check before using it</div>
+
+      <fetcher.Form
+      ref={formRef}
+      method="GET"
+      className="p-2 shadow-2xl flex-grow fixed bottom-10 left-1/2 m-0 -translate-x-1/2 transform rounded-lg bg-gray-100 w-11/12 "
+      action='/coach'
+    >
+      <input name="role" defaultValue={role} hidden/>  
+      <div >
+      <div className='flex'>
+      <textarea 
+         name="prompt" 
+         placeholder={`Ask RunGenie...`}   
+         className='hover:outline hover:outline-1 w-11/12 bg-gray-100 p-2 rounded-lg'
+         onKeyUp={handleSubmit}
+         >
+      </textarea>
+        <div onClick={handleFetch} className="flex items-center cursor-pointer h-full"><Up></Up></div>
+        </div>  
+      </div>
+    </fetcher.Form>
   </div>
 
   )

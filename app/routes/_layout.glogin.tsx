@@ -1,7 +1,7 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect, useLoaderData } from "@remix-run/react";
-import Google from "~/components/Google";
-import { addAuthToken, createLoginSession, getGoogleProfile, getUserId, loginGoogleUser } from "../module/session/session.server"
+import { ActionFunctionArgs,  } from "@remix-run/node";
+import { json, redirect,  } from "@remix-run/react";
+//import Google from "~/components/Google";
+import { addAuthToken, createLoginSession, getGoogleProfile, loginGoogleUser } from "../module/session/session.server"
 //import { createTokenSession, validToken } from "~/module/sessions.server";
 import { z } from "zod";
 import { zx } from "zodix"; // zodix help in validating schemas

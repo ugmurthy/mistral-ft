@@ -24,8 +24,8 @@ function Component() {
 
     useEffect(() => {
         if (codeResponse) {
-            console.log("UseEffect Got codeResponse");
-            console.log("UseEffect submitting form")
+            //console.log("UseEffect Got codeResponse");
+            //console.log("UseEffect submitting form")
             formRef.current.submit();
         }
     }, [codeResponse]);

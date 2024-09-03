@@ -2,7 +2,7 @@ import { useState } from "react";
 import Copy from './Copy';
 // @TODO AA Move this to a component
 // eslint-disable-next-line react/prop-types
-export default function CommandCopy({txt,children, btnTxt="Copy", color="black"}) {
+export default function CommandCopy({txt, btnTxt="Copy"}) {
     const [datatip,setDataTip]=useState(btnTxt);
      
       function copyToClipBoard() {
@@ -21,11 +21,11 @@ export default function CommandCopy({txt,children, btnTxt="Copy", color="black"}
       }
       return (
         <div className='flex ' >
-        <button className="tooltip tooltip-left btn btn-xs btn-ghost text-left" onClick={handleCopy2Clipboard} data-tip={datatip} >
+        <button className=" btn btn-xs btn-ghost text-left" onClick={handleCopy2Clipboard}  >
           <Copy></Copy>
              
         </button>
-        <div className=" opacity-60 text-xs font-thin text-left">{children}</div>
+        
         </div>
         )
     }
