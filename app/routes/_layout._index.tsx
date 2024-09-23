@@ -6,6 +6,7 @@ import InputBox from "~/components/InputBox";
 import {pnt,randomSplit} from "../module/questions.server"
 import { useLoaderData } from "@remix-run/react";
 import { requireUserId } from '../module/session/session.server';
+import { getSearchParamsAsJson } from '../helpers/webUtils.server';
 
 /* export const meta: MetaFunction = () => {
   return [
@@ -20,6 +21,8 @@ export async function loader({request}) {
   if (!user) {
     throw redirect("/login");
   } */
+  const {code, scope, error } = getSearchParamsAsJson(request);
+  console.log("/ : strava/authorize returned " ,code,scope,error);
   const userId = await requireUserId(request);
   console.log("Index Loader:user Authenticated ",userId);
   if (!userId) {
