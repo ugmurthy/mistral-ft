@@ -21,18 +21,29 @@ export async function loader({request}) {
   if (!user) {
     throw redirect("/login");
   } */
-  const {code, scope, error } = getSearchParamsAsJson(request);
-  console.log("/ : strava/authorize returned " ,code,scope,error);
+  //1. Ensure valid user
   const userId = await requireUserId(request);
-  console.log("Index Loader:user Authenticated ",userId);
+  //1.1 if not ask the athlete to login
   if (!userId) {
     throw redirect("/login");
   }
+
+  //2. Check if the athlete has a valid token
+  //2.1 if not ask the athlete if he/she wants to authorize the app
+  const strava_auth = getKV(userId); // key is user id.
+  if (!strava_auth) {
+    console.log("/ : No Strava Auth avaialble")
+  } else {
+    console.log("/ : Strava Auth avaialble, ",JSON.stringify(strava_auth));
+  }
+  // and do what?
+
+  //3.0 we have strava auth for this valid userId
+
   
+  
+  console.log("Index Loader:user Authenticated ",userId);
   const [ignore,rpnt] = randomSplit(pnt,4);
-  //console.log("Index Loader:user Authenticated ",userId);
-  
-  //console.log("Index:user Authenticated ",user);
   return {rpnt };
 }
 
