@@ -1,7 +1,10 @@
 const KV_EXPIRY_SECONDS = process.env.KV_EXPIRY_SECONDS
             ? process.env.KV_EXPIRY_SECONDS 
             :  300 //for now five minutes //60 * 60 * 24 //one day
-
+const KV_EXPIRY_STRAVA = process.env.KV_EXPIRY_STRAVA
+            ? process.env.KV_EXPIRY_STRAVA
+            : 60 * 60 * 24 * 30 //one month
+            
 const url = process.env.KV_REST_API_URL
 const token = process.env.KV_REST_API_TOKEN
 
