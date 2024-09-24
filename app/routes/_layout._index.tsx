@@ -7,7 +7,7 @@ import {pnt,randomSplit} from "../module/questions.server"
 import { useLoaderData } from "@remix-run/react";
 import { requireUserId } from '../module/session/session.server';
 import { getSearchParamsAsJson } from '../helpers/webUtils.server';
-
+import {getKV } from "../module/kv.server";
 /* export const meta: MetaFunction = () => {
   return [
     { title: "My Coach" },
