@@ -22,7 +22,8 @@ const {code, scope, error } = getSearchParamsAsJson(request);
     const json = await response.json();
     console.log("/ : strava/token returned " ,json);
     // Save Token and other details  in KV with key = userId
-    
+    return json
     }
   
+    return {"error":"Something went wrong while gettig strava token"};
 }
