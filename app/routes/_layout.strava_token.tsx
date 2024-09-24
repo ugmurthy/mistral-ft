@@ -3,12 +3,12 @@ import { getSearchParamsAsJson } from "~/helpers/webUtils.server";
 // RESOURCE ROUTE
 export async function loader({request}) {
 
-    const {code, scope, error } = getSearchParamsAsJson(request);
+const {code, scope, error } = getSearchParamsAsJson(request);
   if (code) {
     console.log("/ : strava/authorize returned " ,code,scope,error);
-    // Get Token from strava
-    // Save Token in DB
-    // Redirect to /
+    // Got code from strava
+    // Now get  Token 
+    // 
     const url = "https://www.strava.com/oauth/token";
     const formData = new FormData();
     formData.append("client_id", process.env.STRAVA_CLIENT_ID);
@@ -21,7 +21,7 @@ export async function loader({request}) {
     });
     const json = await response.json();
     console.log("/ : strava/token returned " ,json);
-    // Save Token in KV
+    // Save Token and other details  in KV with key = userId
     
     }
   
