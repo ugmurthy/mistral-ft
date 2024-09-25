@@ -5,6 +5,10 @@ import { requireUserId } from "~/module/session/session.server";
 // RESOURCE ROUTE
 export async function loader({request}) {
 
+const KV_EXPIRY_STRAVA = process.env.KV_EXPIRY_STRAVA
+    ? parseInt(process.env.KV_EXPIRY_STRAVA)
+    : 60 * 60 * 24 * 30 //one month
+
 const {code, scope, error } = getSearchParamsAsJson(request);
   if (code) {
 
@@ -26,8 +30,8 @@ const {code, scope, error } = getSearchParamsAsJson(request);
     const json = await response.json();
     console.log("strava_token returned " ,json);
     // Save Token and other details  in KV with key = userId
-    await setKV(userId,JSON.stringify(json));
-    return json
+    await setKV(userId,JSON.stringify(json),KV_EXPIRY_STRAVA);
+    return redirect("/");
     }
   
     return {"error":"Something went wrong while gettig strava token"};
