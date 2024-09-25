@@ -30,7 +30,7 @@ export async function loader({request}) {
 
   //2. Check if the athlete has a valid token
   //2.1 if not ask the athlete if he/she wants to authorize the app
-  const strava_auth = getKV(userId); // key is user id.
+  const strava_auth = await getKV(userId); // key is user id.
   console.log("Index Loader:strava_auth ",strava_auth);
   console.log("Index Loader:strava_auth length ",Object.keys(strava_auth));
   Object.keys(strava_auth).length === 0 ? console.log("No Strava Auth") : console.log("Strava Auth",JSON.stringify(strava_auth));
