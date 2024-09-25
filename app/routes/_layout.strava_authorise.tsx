@@ -9,6 +9,6 @@ export async function loader({request}) {
     const redirect_uri = "https://rungenie.vercel.app/strava_token";
     //const redirect_uri = "https://rungenie.vercel.app/"
     const url = getStravaAuthoriseURL(redirect_uri,scope);
-    console.log("/strava_authorise : url : ",url);
+    console.log("/strava_authorise : redirect to Strava");
     return redirect(url);// which inturn will call redirect url
 }
