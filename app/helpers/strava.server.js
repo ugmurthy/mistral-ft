@@ -1,4 +1,5 @@
 
+//const STRAVA_AUTHORISE_URL = "https://www.strava.com/oauth/authorize";
 const STRAVA_AUTHORISE_URL = "https://www.strava.com/oauth/authorize";
 
 //  getStravaAuthoriseURL 

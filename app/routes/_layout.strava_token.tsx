@@ -30,7 +30,8 @@ const {code, scope, error } = getSearchParamsAsJson(request);
     const json = await response.json();
     console.log("strava_token returned " ,json);
     // Save Token and other details  in KV with key = userId
-    await setKV(userId,JSON.stringify(json),KV_EXPIRY_STRAVA);
+    const result = await setKV(userId,JSON.stringify(json),KV_EXPIRY_STRAVA);
+    console.log("/strava_token : setKV returned ",result)
     return redirect("/");
     }
   
