@@ -64,7 +64,7 @@ export async function loginUser({email,password}:UserLoginData):Promise<T> {
 const GoogleProfileData = z.object({
   email:z.string(),
   name:z.string(),
-  verified_emai:z.boolean(),
+  verified_email:z.boolean(),
   picture:z.string(),
 })
 type GoogleLoginData = z.infer<typeof GoogleProfileData>

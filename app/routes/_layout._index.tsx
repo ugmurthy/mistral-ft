@@ -6,8 +6,9 @@ import InputBox from "~/components/InputBox";
 import {pnt,randomSplit} from "../module/questions.server"
 import { useLoaderData } from "@remix-run/react";
 import { requireUserId } from '../module/session/session.server';
-import { getSearchParamsAsJson } from '../helpers/webUtils.server';
-import {getKV } from "../module/kv.server";
+import {getStravaToken, KV_EXPIRY_STRAVA} from '../helpers/strava.server';
+import {getKV ,setKV} from "../module/kv.server";
+import date from "date-and-time"
 /* export const meta: MetaFunction = () => {
   return [
     { title: "My Coach" },
@@ -30,11 +31,35 @@ export async function loader({request}) {
 
   //2. Check if the athlete has a valid token
   //2.1 if not ask the athlete if he/she wants to authorize the app
-  const strava_auth = await getKV(userId); // key is user id.
-  console.log("Index Loader:strava_auth ",strava_auth);
-  console.log("Index Loader:strava_auth length ",Object.keys(strava_auth));
-  Object.keys(strava_auth).length === 0 ? console.log("No Strava Auth") : console.log("Strava Auth",JSON.stringify(strava_auth));
+  let strava_auth = await getKV(userId); // key is user id.
+  if (Object.keys(strava_auth).length === 0) {
+    console.log("Index Loader: No Strava Auth") 
+   } else {
+    //check if 6 hours have passed since last auth
+    const now = new Date();
+    const last_auth = new Date(strava_auth.expires_in);
+    const exp_duration = date.subtract(now,last_auth).toSeconds() // positive means expired
+    console.log("Now : ",now)
+    console.log("Last Auth : ",last_auth);
+    
+    if (exp_duration > 0) {
+      console.log(`Index Loader: Strava Auth EXPIRED`);
+      // get new token
+      const json = await getStravaToken(strava_auth.refresh_token,true); // refresh=true
+      console.log("Index Loader: New Strava Auth",JSON.stringify(json));
+      // adjust expires at
+      json.expires_at = date.addSeconds(new Date(),json?.expires_in);
+      // save new token
+      strava_auth = {...strava_auth,...json}
+      // save to KV
+      const result = await setKV(userId,JSON.stringify(strava_auth), KV_EXPIRY_STRAVA);
+      console.log("Index Loader: New Strava Auth(setKV)",JSON.stringify(result));
+    } else {
+      console.log(`Index Loader: Strava Auth Valid for ${-exp_duration} more seconds!`)
+    }
+    
   
+   }
   //3.0 we have strava auth for this valid userId
 
   
