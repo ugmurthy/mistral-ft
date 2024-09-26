@@ -37,11 +37,11 @@ export async function loader({request}) {
    } else {
     //check if 6 hours have passed since last auth
     const now = new Date();
-    const last_auth = new Date(strava_auth.expires_in);
+    const last_auth = new Date(strava_auth.expires_at);
     const exp_duration = date.subtract(now,last_auth).toSeconds() // positive means expired
     console.log("Now : ",now)
     console.log("Last Auth : ",last_auth);
-    
+
     if (exp_duration > 0) {
       console.log(`Index Loader: Strava Auth EXPIRED`);
       // get new token
