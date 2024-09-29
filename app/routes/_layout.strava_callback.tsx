@@ -25,9 +25,23 @@ return new Response("Got it",{status:200})
 
 //     return new Response(formData,{headers,status:200});
 }
+/*
+On createSubstription - Strava sends a GET request to callback URL in the the create
+subscription with hub.challenge, hub.mode (always subscribe),
+hub.verify_token (the originial token sent by app during create subscription)
+verify the token corresponds to one you have sent and respond with hub.challenge
+keeping things simple:  passing whole params when it isn't necessary
 
+*/
 export async function loader({request}) {   
     const params = getSearchParamsAsJson(request);
     console.log("/strava_callback loader: ",JSON.stringify(params));
-    return new Response(JSON.stringify(params),{status:200,headers:{"Content-Type":"application/json"}});
+    // check if hub.verify_token is correct same as ours
+    const verify_token = params["hub.verify_token"];
+    if (!verify_token || (verify_token !== STRAVA_VERIFY_TOKEN)) {
+        console.log("/strava_callback loader: invalid verify_token",verify_token);
+        return new Response("Invalid verify token",{status:401});
+    }
+
+    return new Response(JSON.stringify({params}),{status:200,headers:{"Content-Type":"application/json"}});
 }
