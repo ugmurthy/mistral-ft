@@ -7,8 +7,9 @@ import { getSearchParamsAsJson } from "~/helpers/webUtils.server";
 // RESOURCE ROUTE
 export async function loader({request}) {
     const userId = await requireUserId(request);
-    const params = await getSearchParamsAsJson(request);
-    const del = params.del?true:false;
+    let {del} =  getSearchParamsAsJson(request);
+    console.log("/strava_subs : ",del)
+    del = del?true:false;
 
     const client_id = process.env.STRAVA_CLIENT_ID;
     const client_secret = process.env.STRAVA_CLIENT_SECRET;
