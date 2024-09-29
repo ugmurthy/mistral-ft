@@ -86,9 +86,6 @@ export async function createStravaSubscription(
     const response = await fetch(
        STRAVA_SUBSCRIPTION_URL,
         {
-            headers: {
-                "Content-Type": "application/json",
-            },
             method: "POST",
             body: formData,
         } );
