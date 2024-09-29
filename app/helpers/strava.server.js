@@ -76,12 +76,19 @@ export async function createStravaSubscription(
     client_secret=process.env.STRAVA_CLIENT_SECRET, 
     callback_url=STRAVA_CALLBACK_URL,
     verify_token=STRAVA_VERIFY_TOKEN) {
+    console.log("Creating Strava Subscription");
+    console.log("client_id", client_id);
+    console.log("client_secret", client_secret);
+    console.log("callback_url", callback_url);
+    console.log("verify_token", verify_token);
 
         const formData = new FormData();
         formData.append("client_id", client_id);
         formData.append("client_secret", client_secret);
         formData.append("callback_url", callback_url);
         formData.append("verify_token", verify_token);
+    console.log("url ",STRAVA_SUBSCRIPTION_URL);
+    //console.log("formData", formData);
 
     const response = await fetch(
        STRAVA_SUBSCRIPTION_URL,
