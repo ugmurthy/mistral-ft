@@ -93,9 +93,6 @@ export async function createStravaSubscription(
             body: formData,
         } );
 
-    if (!response.ok) {
-        return new Response("Error during Strava Create subsription",{status:500})
-    }
     const json = await response.json();
     return json;
 
