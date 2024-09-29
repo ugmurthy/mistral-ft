@@ -18,10 +18,15 @@ export async function loader({request}) {
     let ret_data = await response.json();
     // DELETE if requested
     if (del) {
+      
       const id = ret_data?.id ? ret_data.id : null;
       if (id) {
-        const del_url = `${STRAVA_SUBSCRIPTION_URL}/${id}?client_id=${client_id}&client_secret=${client_secret}`
-        const del_response = await fetch(del_url, {method: 'DELETE'});
+        console.log("/strava_subs : Deleting subs ",id)
+        const del_url = `${STRAVA_SUBSCRIPTION_URL}/${id}`
+        const formData = new FormData();
+        formData.append('client_id', client_id);
+        formData.append('client_secret', client_secret);
+        const del_response = await fetch(del_url, {method: 'DELETE',body:formData});
         ret_data = await del_response.json();
       }
     }
