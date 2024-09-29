@@ -24,7 +24,7 @@ export async function loader({request}) {
             console.log("Error deleting subscription", del_response.status, del_response.statusText);
             return {status:del_response.status, statusText:del_response.statusText};
         }
-        ret_data = await del_response.json();
+        return ret_data;
     }
     return ret_data;
 }
