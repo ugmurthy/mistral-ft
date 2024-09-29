@@ -89,10 +89,13 @@ export async function createStravaSubscription(
             method: "POST",
             body: formData,
         } );
-
-    const json = await response.json();
-    return json;
-
+    if (response.ok) {
+        const json = await response.json();
+        return json;
+    } else {
+        console.log(response.statusText,response.status);
+        return new Response(`Error during Strava subscription:${response.statusText}`,{status:500})    
+    }
 }
 
     
