@@ -7,7 +7,7 @@ import {  STRAVA_SUBSCRIPTION_URL} from "~/helpers/strava.server";
 export async function loader({request}) {
     const userId = await requireUserId(request);
     // DELETE a subscription
-    console.log("/strava_subs/delete")
+    
     const client_id = process.env.STRAVA_CLIENT_ID;
     const client_secret = process.env.STRAVA_CLIENT_SECRET;
     const url = `${STRAVA_SUBSCRIPTION_URL}?client_id=${client_id}&client_secret=${client_secret}`
@@ -20,6 +20,10 @@ export async function loader({request}) {
         const del_url = `${STRAVA_SUBSCRIPTION_URL}/${id}?client_id=${client_id}&client_secret=${client_secret}`
         console.log("/strava_subs delete ",del_url)
         const del_response = await fetch(del_url, {method: 'DELETE'});
+        if (del_response.status !== 204) {
+            console.log("Error deleting subscription", del_response.status, del_response.statusText);
+            return {status:del_response.status, statusText:del_response.statusText};
+        }
         ret_data = await del_response.json();
     }
     return ret_data;
