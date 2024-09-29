@@ -43,5 +43,5 @@ export async function loader({request}) {
         return new Response("Invalid verify token",{status:401});
     }
 
-    return new Response(JSON.stringify({params}),{status:200,headers:{"Content-Type":"application/json"}});
+    return new Response(JSON.stringify(params),{status:200,headers:{"Content-Type":"application/json"}});
 }
