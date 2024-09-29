@@ -22,8 +22,8 @@ export async function loader({request}) {
     console.log("/strava_subs : Deleting subs ",id, del, ret_data)
     // DELETE if requested
     if (del && id) {
-        const del_url = `${STRAVA_SUBSCRIPTION_URL}/id/${id}`
-        console.log("/strava_subs delte ",del_url)
+        const del_url = `${STRAVA_SUBSCRIPTION_URL}/${id}?client_id=${client_id}&client_secret=${client_secret}`
+        console.log("/strava_subs delete ",del_url)
         const formData = new FormData();
         formData.append('client_id', client_id);
         formData.append('client_secret', client_secret);
