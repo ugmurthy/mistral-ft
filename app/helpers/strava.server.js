@@ -7,7 +7,7 @@ export const KV_EXPIRY_STRAVA = process.env.KV_EXPIRY_STRAVA
 const STRAVA_AUTHORISE_URL = "https://www.strava.com/oauth/authorize";
 const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 export const STRAVA_SUBSCRIPTION_URL = "https://www.strava.com/api/v3/push_subscriptions";
-const STRAVA_CALLBACK_URL = "https://rungenie/strava_callback";
+const STRAVA_CALLBACK_URL = "https://rungenie.vercel.app/strava_callback";
 export const STRAVA_VERIFY_TOKEN ="strava_rungenie_007"
 //  getStravaAuthoriseURL 
 //  given redirect url and scope, returns the url to authorise the app
