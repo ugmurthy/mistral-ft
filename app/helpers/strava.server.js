@@ -6,6 +6,9 @@ export const KV_EXPIRY_STRAVA = process.env.KV_EXPIRY_STRAVA
 //const STRAVA_AUTHORISE_URL = "https://www.strava.com/oauth/authorize";
 const STRAVA_AUTHORISE_URL = "https://www.strava.com/oauth/authorize";
 const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
+export const STRAVA_SUBSCRIPTION_URL = "https://www.strava.com/api/v3/push_subscriptions";
+const STRAVA_CALLBACK_URL = "https://rungenie/strava_callback";
+export const STRAVA_VERIFY_TOKEN ="strava_rungenie_007"
 //  getStravaAuthoriseURL 
 //  given redirect url and scope, returns the url to authorise the app
 //  @param {string} redirect_uri - the redirect uri to use
@@ -54,3 +57,48 @@ export async function fetchToken(formData) {
     const json = await response.json();
     return json;
 }
+
+// STEPS to subscribe to Strava webhooks
+// 1. Create a Subscripton and POST to strava subscription
+// 2. Strava will send a GET request to the callback url with a 'hub.verify_token' and 'hub.challenge' parameter
+// 3. Verify the hub.verify_token (same as one that was sent as verify_tokne) parameter and respond with the hub.challenge parameter
+// 4. the App should return the hub.challenge along with header = application/json as a POST request
+// 5. Strava will send a POST request to the callback url with the subscription id and latest_timestamp
+// 6. Store the subscription id and latest_timestamp in a database
+
+// Create Strava Subscription
+// @param {string} client_id - the client id of the app
+// @param {string} client_secret - the client secret of the app
+// @param {string} callback_url - the callback url to use
+// @param {string} verify_token - the verify token to use
+export async function createStravaSubscription(
+    client_id=process.env.STRAVA_CLIENT_ID, 
+    client_secret=process.env.STRAVA_CLIENT_SECRET, 
+    callback_url=STRAVA_CALLBACK_URL,
+    verify_token=STRAVA_VERIFY_TOKEN) {
+
+        const formData = new FormData();
+        formData.append("client_id", client_id);
+        formData.append("client_secret", client_secret);
+        formData.append("callback_url", callback_url);
+        formData.append("verify_token", verify_token);
+
+    const response = await fetch(
+       STRAVA_SUBSCRIPTION_URL,
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: formData,
+        } );
+
+    if (!response.ok) {
+        return new Response("Error during Strava Create subsription",{status:500})
+    }
+    const json = await response.json();
+    return json;
+
+}
+
+    
