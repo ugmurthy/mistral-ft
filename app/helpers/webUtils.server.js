@@ -1,3 +1,5 @@
+import * as cheerio from "cheerio"
+
 export function getHeaders(request) {
     const headers = {};
   request.headers.forEach((value, key) => {
@@ -71,3 +73,69 @@ export function getSearchParamsAsJson(request) {
     return paramsObj;
 }
   
+//// web processors
+
+/// extracts URLs from a string as a list only https://...
+export function extractURLsFromString(str) {
+  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
+  const urls = [];
+
+  let match;
+  while ((match = urlRegex.exec(str)) !== null) {
+    urls.push(match[0]);
+  }
+
+  return urls;
+}
+
+
+// checks if string is a valid URL
+export function isValidURL(str) {
+  try{
+    new URL(str);
+    return true;
+  } catch (error) {
+    return false;     
+  }  
+}
+
+// html(body) to text
+export function htmlToText(html) {
+  const $ = cheerio.load(html);
+  $('script, style').remove();
+  let text = $('body').text();
+  // replace multiple ' ' and multiple '\n'  single ' ' and trim 
+  text = text.replace(/\s+/g, ' ').replace(/\n/g, '').trim();
+  return text;
+}
+
+export async function extractHTMLFromURL(url) {
+  if (isValidURL(url)) {
+    try {
+      const response = await fetch(url);
+      const html = await response.text();
+      return html;
+    } catch (error) {
+      console.error('Error fetching HTML:', error);
+      return null;
+    }
+  }
+}
+
+export async function extractTextFromURLOrHTML(urlOrHtml) {
+  // Check if the input is a URL or HTML content
+   const isUrl = urlOrHtml.startsWith('http');
+   if (isUrl) {
+      const html = await extractHTMLFromURL(urlOrHtml);
+      if (html) {
+         const textContent = htmlToText(html);
+         return textContent;
+      } else {
+         return null;
+      }
+   } else {
+      // Assume it's HTML content
+      const textContent = htmlToText(urlOrHtml);
+      return textContent;
+   }
+}

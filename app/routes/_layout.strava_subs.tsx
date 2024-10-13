@@ -1,5 +1,8 @@
-// GET or GET & DELETE a subscription if no subs then CREATE if param is create=1
-
+// GET or GET & DELETE a subscription 
+// @TODO : if no subs then CREATE if param is create=1
+// RESOURCE ROUTE
+// /strava_subs?del=1   // will GET and Delete a subs if exists
+// /strava_subs?create=1 // will GET and Create a subs if no subs exists
 import { requireUserId } from "~/module/session/session.server";
 import {  STRAVA_SUBSCRIPTION_URL} from "~/helpers/strava.server";
 import { getSearchParamsAsJson } from "~/helpers/webUtils.server";

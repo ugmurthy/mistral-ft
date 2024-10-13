@@ -4,6 +4,7 @@ import { requireUserId } from "~/module/session/session.server";
 import {  createStravaSubscription} from "~/helpers/strava.server";
 
 // RESOURCE ROUTE
+// Create a Strava Subsription.
 export async function loader({request}) {
     const userId = await requireUserId(request);
     console.log("/strava_subs/create ")

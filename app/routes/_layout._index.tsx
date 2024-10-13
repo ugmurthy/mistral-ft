@@ -32,7 +32,8 @@ export async function loader({request}) {
   //2. Check if the athlete has a valid token
   //2.1 if not ask the athlete if he/she wants to authorize the app
   let strava_auth = await getKV(userId); // key is user id.
-  if (Object.keys(strava_auth).length === 0) {
+  //console.log("Index Loader: Strava Auth",JSON.stringify(strava_auth));
+  if (strava_auth === null || Object.keys(strava_auth).length === 0) {
     console.log("Index Loader: No Strava Auth") 
    } else {
     //check if 6 hours have passed since last auth
@@ -42,18 +43,18 @@ export async function loader({request}) {
     console.log("Now : ",now)
     console.log("Last Auth : ",last_auth);
 
-    if (exp_duration > 0) {
+    if (exp_duration > 0) { // positive means expired
       console.log(`Index Loader: Strava Auth EXPIRED`);
       // get new token
       const json = await getStravaToken(strava_auth.refresh_token,true); // refresh=true
-      console.log("Index Loader: New Strava Auth",JSON.stringify(json));
+      console.log("Index Loader: New Strava Auth acquired");
       // adjust expires at
       json.expires_at = date.addSeconds(new Date(),json?.expires_in);
       // save new token
       strava_auth = {...strava_auth,...json}
       // save to KV
       const result = await setKV(userId,JSON.stringify(strava_auth), KV_EXPIRY_STRAVA);
-      console.log("Index Loader: New Strava Auth(setKV)",JSON.stringify(result));
+      //console.log("Index Loader: New Strava Auth(setKV)",JSON.stringify(result));
     } else {
       console.log(`Index Loader: Strava Auth Valid for ${-exp_duration} more seconds!`)
     }

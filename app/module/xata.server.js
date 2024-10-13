@@ -320,6 +320,42 @@ db.imageUrlToBase64 = async (imageUrl) => {
     }
 }
 
+// give a task (string) return the description (string)
+db.getTaskDescription = async (task) => { 
+    // search in 'tasks' table and column 'task' for query string=task
+    const body = JSON.stringify(
+        {query: task,
+            tables:[
+              {table:"users",target:[]}, 
+              {table:"authtokens",target:[]},
+              {table:"qas",target:[]},{table:"conversations",target:[]},
+              {table:"tasks",target:[{column:"task"}]}],
+            fuzziness:2,
+            prefix:"phrase"}
+        )   
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.XATA_API_KEY}`
+          },
+            body: body  // body data type must match "Content-Type" header
+        }
+    const URL= process.env.XATA_URL+"/search"
+    const response = await fetch(URL, options);
+    if (response.ok) {
+        const data = await response.json()
+        if (data.records.length>0) {
+            return data.records[0]?.task_description
+        } else {
+            return null
+        }
+    } else {
+        console.log("Error searching record in tasks table",await response.json())
+        return null
+    }
+}
+
 
 
 export default db

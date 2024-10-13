@@ -4,9 +4,9 @@ import { requireUserId } from "~/module/session/session.server";
 import {  STRAVA_SUBSCRIPTION_URL} from "~/helpers/strava.server";
 
 // RESOURCE ROUTE
+// DELETE a subscription
 export async function loader({request}) {
     const userId = await requireUserId(request);
-    // DELETE a subscription
     
     const client_id = process.env.STRAVA_CLIENT_ID;
     const client_secret = process.env.STRAVA_CLIENT_SECRET;
