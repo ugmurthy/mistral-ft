@@ -26,7 +26,8 @@ if (athlete_id) {
     if (excess > 0) {
         new_data.splice(excess);
     }
-    const result=await setKV(athlete_id,new_data,KV_EXPIRY_STRAVA);
+    console.log("/strava_callback EVENT: athlete_id and new_data.length",athlete_id, new_data.len);
+    const result=await setKV(athlete_id,JSON.stringify(new_data),KV_EXPIRY_STRAVA);
 
 return new Response("Got it",{status:200})
 
