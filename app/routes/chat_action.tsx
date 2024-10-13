@@ -22,7 +22,7 @@ export async function action({request}) {
         console.log("/chat_action : prompt.length ", prompt.length);
         } catch (error) {
         console.error('Error extracting text:', error);
-        return new Response(`Error extracting text from url: ${error}`,{status:500})
+        return new Response(`Error Extracting text from url: ${error}`,{status:500})
         }
     }
     
@@ -43,7 +43,7 @@ export async function action({request}) {
     } else {
         const error = await response.json();
         console.log("Error ",error);
-        
+
         return error;
     }
 }
