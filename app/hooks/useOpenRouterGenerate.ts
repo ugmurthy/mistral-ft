@@ -49,7 +49,8 @@ export const useOpenRouterGenerate = (prompt:string, model:string, task:string="
             }
         }
         
-    },[prompt,model])
+    },[]) // run once
+//  },[prompt,model])  // run every time promp/model changes.
 
     return data;
 }            

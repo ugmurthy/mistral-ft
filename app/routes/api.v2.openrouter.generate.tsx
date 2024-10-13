@@ -25,7 +25,7 @@ export default function OpenRouterGenerate() {
 
     /// Assumes model exists - this validation to be done before using useOpenRouter
     /// @TODO - deal with useOpenRouterGenerator not getting a valid model. - it keep retrying indefinitely
-    const data = useOpenRouterGenerate(prompt,model,task,true);
+    const data = useOpenRouterGenerate(prompt,model,task,false);
     const [submitted,setSubmitted]=useState(false);
 
 function jsonArray2Content(allJSON) {
