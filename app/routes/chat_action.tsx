@@ -11,6 +11,7 @@ export async function action({request}) {
     const features={};
     let {prompt,model, task} = await request.json();
     console.log("/chat_action : task ", task);
+    console.log("/chat_action : mode ", model);
     if (!prompt || !model) {
         return { error: "Missing prompt or model" };
     }
