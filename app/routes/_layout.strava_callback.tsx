@@ -31,6 +31,7 @@ if (athlete_id) {
 return new Response("Got it",{status:200})
 
 }
+}
 /*
 On createSubstription - Strava sends a GET request to callback URL in the the create
 subscription with hub.challenge, hub.mode (always subscribe),
