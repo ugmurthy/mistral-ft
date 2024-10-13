@@ -1,4 +1,4 @@
-import { getFormData, getHeaders,getSearchParamsAsJson,isFormData } from "~/helpers/webUtils.server";
+import { getFormData,getSearchParamsAsJson,isFormData } from "~/helpers/webUtils.server";
 import { STRAVA_VERIFY_TOKEN } from "~/helpers/strava.server";
 import { getKV, setKV ,KV_EXPIRY_STRAVA} from "../module/kv.server";
 //import { method } from "lodash";
