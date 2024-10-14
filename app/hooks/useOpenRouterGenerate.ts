@@ -28,7 +28,13 @@ export const useOpenRouterGenerate = (prompt:string, model:string, task:string="
                 } else {
                     try {
                     const chunk = JSON.parse(data);
+                    if (chunk.hasOwnProperty('error')) {
+                        console.log("useEffect: OpenRouterGenerate: Error: ",chunk.error)
+                         esRef.current.close();
+                         return;
+                    }
                     debug && console.log(chunk.id, chunk.choices[0].delta.content);
+
                     setData(prevData => [...prevData, chunk]);
                     //setText(prevTxt => prevTxt+chunk.choices[0].delta.content);
                     } catch(e) {

@@ -8,6 +8,7 @@ import { useOpenRouterGenerate } from "~/hooks/useOpenRouterGenerate";
 import { getFormData,  } from "~/helpers/webUtils.server";
 import Generate from "../components/OForm";
 import MarkdownItRenderer from "~/components/MarkDown";
+import SearchSelect from "~/components/SearchSelect";
 
 export async function action({request}) {
 
@@ -27,7 +28,25 @@ export default function OpenRouterGenerate() {
     /// @TODO - deal with useOpenRouterGenerator not getting a valid model. - it keep retrying indefinitely
     const data = useOpenRouterGenerate(prompt,model,task,false);
     const [submitted,setSubmitted]=useState(false);
-
+    const [selectedTask,setSelectedTask]=useState(task);
+    const [selectedModel,setSelectedModel]=useState(model);
+    const options = [
+        'assist_distance_runner',
+        'summarise_paper',
+        'find_hidden_message',
+        'to_flashcards',
+        'summarise_inshort'
+    ]
+    const models = [
+        'google/gemini-flash-1.5-8b-exp',
+        'meta-llama/llama-3.2-1b-instruct',
+        'meta-llama/llama-3.2-1b-instruct:free',
+        'mistralai/codestral-mamba',
+        'mistralai/mistral-7b-instruct:free',
+        'openai/gpt-4o-2024-08-06',
+        'openai/gpt-4o-mini-2024-07-18',
+        'openai/gpt-4o-mini',
+    ]
 function jsonArray2Content(allJSON) {
     let content=''
     const idSet = new Set();
@@ -42,93 +61,20 @@ function jsonArray2Content(allJSON) {
     return [content,idSet];
   }
 
-
+const handleSelectTask = (selectedOption) => {
+    console.log("Selected Option: ",selectedOption);
+    setSelectedTask(selectedOption);
+}
+const handleSelectModel = (selectedOption) => {
+    console.log("Selected Option: ",selectedOption);
+    setSelectedModel(selectedOption);
+}
 /// form submit handler
     const handleSubmit = (e) => {
     setSubmitted(true);
     }
 ///
-/* 
-const evtSource = useCallback( (prompt:string,model:string) => {
-        console.log("Callback: OpenRouterGenerate: ",prompt,model);
-        const es = createEventSource({
-            url: `/chat_action`,
-            headers: {
-                Accept: 'text/event-stream',
-            },
-            method: 'POST',
-            body: JSON.stringify({
-                prompt: prompt,
-                model: model
-            }),
-            onMessage: ({data,event,id}) => {
-                
-                if (data.includes('[DONE]')) {
-                    console.log("useEffect: OpenRouterGenerate: We are all done! Closing EventSource...")
-                    es.close();
-                } else {
-                    try {
-                    const chunk = JSON.parse(data);
-                    console.log(chunk.id, chunk.choices[0].delta.content);
-                    setData(prevData => [...prevData, chunk]);
-                    //setText(prevTxt => prevTxt+chunk.choices[0].delta.content);
-                    } catch(e) {
-                        console.log(`Error: EventSource: While Parsing : ${data} `,e)
-                    }
-                }
-            },
-            
-            });
-            console.log(es.readyState) 
-},[model,prompt])
- */
-/* 
-useEffect(() => {
-    if ( !prompt || !model) return;
-    console.log("useEffect: OpenRouterGenerate: ",prompt,model);
 
-    if (!esRef.current) { // prevent second call
-         esRef.current = createEventSource({
-        url: `/chat_action`,
-        headers: {
-            Accept: 'text/event-stream',
-        },
-        method: 'POST',
-        body: JSON.stringify({
-            prompt: prompt,
-            model: model
-        }),
-        onMessage: ({data,event,id}) => {
-            
-            if (data.includes('[DONE]')) {
-                console.log("useEffect: OpenRouterGenerate: We are all done! Closing EventSource...")
-                esRef.current.close();
-            } else {
-                try {
-                const chunk = JSON.parse(data);
-                console.log(chunk.id, chunk.choices[0].delta.content);
-                setData(prevData => [...prevData, chunk]);
-                //setText(prevTxt => prevTxt+chunk.choices[0].delta.content);
-                } catch(e) {
-                    console.log(`Error: EventSource: While Parsing : ${data} `,e)
-                }
-            }
-        },
-        
-            });
-    }
-
-    return () => { // teardown EventSource to cleanup
-        if (esRef.current) {
-            esRef.current.close();
-            esRef.current = null;
-        }
-    }
-    //if (submitted) {
-    //    evtSource(prompt,model);
-    //}
-},[prompt,model])
- */
     const [content,idSet] = jsonArray2Content(data);
     const idArray = Array.from(idSet);
     
@@ -155,14 +101,17 @@ useEffect(() => {
                     placeholder="task"
                     defaultValue=""
                     className="input input-bordered input-primary w-full max-w-xs" />
+            <SearchSelect options={options} onSelect={handleSelectTask}></SearchSelect>
+            <SearchSelect options={models} onSelect={handleSelectModel}></SearchSelect>
             <button type="submit" className="btn btn-sm">Submit</button>
-            </form>
+            </form> 
 
         <div className="text-xs font-thin text-blue-600">
             <div className="px-4 pt-4 text-xs font-thin text-red-600">
                 <div>Model: {model}</div>
                 <div>Prompt:  {prompt?.length>100 ?prompt?.slice(0,100)+"...": prompt}</div>
                 <div>Task: {task}</div>
+                
             </div>
             <div className="p-4">Streaming response :
                 {data.length > 0 && <div>

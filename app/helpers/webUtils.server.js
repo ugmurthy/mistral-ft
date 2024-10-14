@@ -113,6 +113,12 @@ export async function extractHTMLFromURL(url) {
   if (isValidURL(url)) {
     try {
       const response = await fetch(url);
+      const contentType = response.headers.get('content-type');
+      
+      if (!contentType || !contentType.includes('text/html') ) {
+        console.log("Error: Cannot process non HTML content-type")
+        return `Error: Expecting content-type text/html but got ${contentType}`;
+      }
       const html = await response.text();
       return html;
     } catch (error) {

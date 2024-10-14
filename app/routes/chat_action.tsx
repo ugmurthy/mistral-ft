@@ -10,8 +10,8 @@ import { isValidURL, extractTextFromURLOrHTML } from '~/helpers/webUtils.server'
 export async function action({request}) {
     const features={};
     let {prompt,model, task} = await request.json();
-    console.log("/chat_action : task ", task);
-    console.log("/chat_action : mode ", model);
+    console.log("/chat_action : task : ", task);
+    console.log("/chat_action : model: ", model);
     if (!prompt || !model) {
         return { error: "Missing prompt or model" };
     }
@@ -20,6 +20,7 @@ export async function action({request}) {
     if (isValidURL(prompt)) {
         try {
         prompt = await extractTextFromURLOrHTML(prompt);
+        
         console.log("/chat_action : prompt.length ", prompt.length);
         } catch (error) {
         console.error('Error extracting text:', error);

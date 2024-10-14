@@ -13,8 +13,13 @@ function jsonArray2Content(allJSON) {
     let content=''
     const idSet = new Set();
     for (const j of allJSON) { 
+        try {
         content += j.choices[0].delta.content
         idSet.add(j.id);
+        } catch (error) {
+            console.log("jsonArray2Content: Error while parsing ",j);
+            
+        }
     }
     const idArray = Array.from(idSet);
     return [content,idArray];
