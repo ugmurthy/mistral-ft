@@ -73,7 +73,7 @@ export default function OpenRouterGenerate() {
                  <pre>{JSON.stringify(data[data.length-1]?.usage)} </pre>
                  </div>}
             </div>
-            <div className="text-sm mx-4 p-4 bg-gray-100 rounded-lg">
+            <div className=" text-xl mx-4 p-4 bg-gray-100 rounded-lg">
             <MarkdownItRenderer markdown={content} className={"text-gray-900 "}></MarkdownItRenderer>
             </div>
             

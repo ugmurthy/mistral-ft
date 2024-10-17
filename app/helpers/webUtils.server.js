@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio"
+//import pdf from "pdf-parse-new" // uninstalled
 
 export function getHeaders(request) {
     const headers = {};
@@ -114,13 +115,26 @@ export async function extractHTMLFromURL(url) {
     try {
       const response = await fetch(url);
       const contentType = response.headers.get('content-type');
-      
-      if (!contentType || !contentType.includes('text/html') ) {
-        console.log("Error: Cannot process non HTML content-type")
+      let html = null;
+      const oneOfPDForText = contentType?.includes('text/html') || contentType?.includes('application/pdf')
+      if (!contentType && !oneOfPDForText ) {
+        console.log(`Error: Cannot process non HTML content-type: ${contentType}`)
         return `Error: Expecting content-type text/html but got ${contentType}`;
+      } else {
+        if (contentType.includes('application/pdf')) {
+            // @TODO convert pdf -> text
+            // const pdfData = await response.arrayBuffer();
+            // let pdfText = await pdf(pdfData);
+            // pdfText = pdfText.text;
+            // return pdfText;
+            return `Error: Expecting content-type text/html but got ${contentType}`;
+        } else {
+          // we assume html / text
+          html = await response.text();
+          return html;
+        }
       }
-      const html = await response.text();
-      return html;
+      
     } catch (error) {
       console.error('Error fetching HTML:', error);
       return null;

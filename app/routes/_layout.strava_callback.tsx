@@ -21,10 +21,10 @@ const athlete_id = ret_data["owner_id"];
 if (athlete_id) {
     const prev_data = await getKV(athlete_id);
     // ensure we have last 7 callback info - trim if more
-    const new_data = prev_data?[...prev_data,ret_data]:[ret_data];
+    let new_data = prev_data?[...prev_data,ret_data]:[ret_data];
     const excess = new_data.length - 7;
     if (excess > 0) {
-        new_data.splice(excess);
+        new_data = new_data.splice(excess);
     }
     console.log("/strava_callback EVENT: athlete_id and new_data.length",athlete_id, new_data.len);
     const result=await setKV(athlete_id,JSON.stringify(new_data),KV_EXPIRY_STRAVA);

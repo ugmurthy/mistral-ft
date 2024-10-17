@@ -20,7 +20,6 @@ export async function action({request}) {
     if (isValidURL(prompt)) {
         try {
         prompt = await extractTextFromURLOrHTML(prompt);
-        
         console.log("/chat_action : prompt.length ", prompt.length);
         } catch (error) {
         console.error('Error extracting text:', error);

@@ -7,7 +7,8 @@ const token = process.env.KV_REST_API_TOKEN
 export const KV_EXPIRY_STRAVA = process.env.KV_EXPIRY_STRAVA
            ? parseInt(process.env.KV_EXPIRY_STRAVA ):
            60 * 60 * 24 * 30 //one month
-export async function setKV(key: string, value, expiry: Number) {
+
+export async function setKV(key: string, value:string, expiry: Number) {
     const setURL = url+"/pipeline"
     if (!expiry) expiry = KV_EXPIRY_SECONDS;
     const body = [["SET",key,value,"EX",expiry],["GET",key]]
