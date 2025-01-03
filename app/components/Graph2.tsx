@@ -44,6 +44,7 @@ const VisNetwork = () => {
     }
   }, [visJsRef,nodes,edges]);
 
+  
   // Function to add a node
   const addNode = () => {
     const newId = nodes.length + 1;
