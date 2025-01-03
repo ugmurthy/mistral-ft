@@ -10,7 +10,7 @@ import Generate from "../components/Generate";
 //import MarkdownItRenderer from "~/components/MarkDown";
 import SearchSelect from "~/components/SearchAndSelect";
 import Model from "~/components/Model";
-import Graph from "~/components/Graph2";
+//import Graph from "~/components/Graph2";
 //import CommandCopy from "~/components/CommandCopy";
 export async function action({request}) {
 
@@ -127,7 +127,7 @@ const handleSelectModel = (selectedOption) => {
             <Generate model={"liquid/lfm-40b:free"} prompt={prompt} task={task}></Generate>
             <Model/>
             <div className="mx-4 p-4 bg-gray-100 rounded-lg">
-                <Graph/>    
+               {/*<Graph/>*/}
             </div>
         </div>
     )
