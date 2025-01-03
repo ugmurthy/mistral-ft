@@ -1,5 +1,7 @@
 import  { useState, useEffect, useRef } from 'react';
-import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
+//import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
+import pkg from 'vis-network/standalone/esm/vis-network.js';
+const { DataSet, Network } = pkg;
 import 'vis-network/styles/vis-network.min.css';
 
 const VisNetwork = () => {
