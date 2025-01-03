@@ -1,6 +1,8 @@
 import * as cheerio from "cheerio"
 //import pdf from "pdf-parse-new" // uninstalled
-import pdfParse from "pdf-parse";
+//import pdfParse from "pdf-parse";
+import pdfParse from 'pdf-parse/lib/pdf-parse'
+
 import {YoutubeTranscript} from "youtube-transcript"
 
 export function getHeaders(request) {
