@@ -1,7 +1,13 @@
 import * as cheerio from "cheerio"
 //import pdf from "pdf-parse-new" // uninstalled
+
+
+// following import is not working: 
 //import pdfParse from "pdf-parse";
+// error: ENOENT: no such file or directory, open './test/data/05-versions-space.pdf'
+// Since the bug is in the index you can bypass it by importing from /lib directly. Only downside is that you loose types if you're using typescipt.
 import pdfParse from 'pdf-parse/lib/pdf-parse'
+//solution: https://gitlab.com/autokent/pdf-parse/-/issues/24
 
 import {YoutubeTranscript} from "youtube-transcript"
 
