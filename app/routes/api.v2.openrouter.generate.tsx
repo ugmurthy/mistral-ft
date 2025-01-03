@@ -29,30 +29,30 @@ export default function OpenRouterGenerate() {
     /// Assumes model exists - this validation to be done before using useOpenRouter
     /// @TODO - deal with useOpenRouterGenerator not getting a valid model. - it keep retrying indefinitely
     //const data = useOpenRouterGenerate(prompt,model,task,false);
-    const [submitted,setSubmitted]=useState(false);
+    //const [submitted,setSubmitted]=useState(false);
     const [selectedTask,setSelectedTask]=useState('');
     const [selectedModel,setSelectedModel]=useState('');
-    const options = [
-        'analyse_patent',
-        'assist_distance_runner',
-        'clear_text',
-        'explain_docs',
-        'extract_ideas',
-        'find_hidden_message',
-        'to_flashcards',
-        'summarise',
-        'summarise_inshort',
-        'summarise_paper',       
-    ]
-    const models = [
-        'google/gemini-flash-1.5-8b-exp',
-        'meta-llama/llama-3.2-11b-vision-instruct:free',
-        'mistralai/codestral-mamba',
-        'mistralai/mistral-7b-instruct:free',
-        'openai/gpt-4o-2024-08-06',
-        'openai/gpt-4o-mini-2024-07-18',
-        'openai/gpt-4o-mini',
-    ]
+    // const options = [
+    //     'analyse_patent',
+    //     'assist_distance_runner',
+    //     'clear_text',
+    //     'explain_docs',
+    //     'extract_ideas',
+    //     'find_hidden_message',
+    //     'to_flashcards',
+    //     'summarise',
+    //     'summarise_inshort',
+    //     'summarise_paper',       
+    // ]
+    // const models = [
+    //     'google/gemini-flash-1.5-8b-exp',
+    //     'meta-llama/llama-3.2-11b-vision-instruct:free',
+    //     'mistralai/codestral-mamba',
+    //     'mistralai/mistral-7b-instruct:free',
+    //     'openai/gpt-4o-2024-08-06',
+    //     'openai/gpt-4o-mini-2024-07-18',
+    //     'openai/gpt-4o-mini',
+    // ]
 // function jsonArray2Content(allJSON) {
 //     let content=''
 //     const idSet = new Set();
@@ -67,18 +67,18 @@ export default function OpenRouterGenerate() {
 //     return [content,idSet];
 //   }
 
-const handleSelectTask = (selectedOption) => {
-    //console.log("Selected Option: ",selectedOption);
-    setSelectedTask(selectedOption);
-}
-const handleSelectModel = (selectedOption) => {
-    //console.log("Selected Option: ",selectedOption);
-    setSelectedModel(selectedOption);
-}
+// const handleSelectTask = (selectedOption) => {
+//     //console.log("Selected Option: ",selectedOption);
+//     setSelectedTask(selectedOption);
+// }
+// const handleSelectModel = (selectedOption) => {
+//     //console.log("Selected Option: ",selectedOption);
+//     setSelectedModel(selectedOption);
+// }
 /// form submit handler
-    const handleSubmit = (e) => {
-    setSubmitted(true);
-    }
+    // const handleSubmit = () => {
+    // setSubmitted(true);
+    // }
 ///
 
     //const [content,idSet] = jsonArray2Content(data);
@@ -87,7 +87,7 @@ const handleSelectModel = (selectedOption) => {
 
     return (
         <div>
-            <form method="POST" className="p-10 space-y-2 flex flex-col items-center" onSubmit={handleSubmit} >
+           {/* <form method="POST" className="p-10 space-y-2 flex flex-col items-center" onSubmit={handleSubmit} >
              <input
                     name="prompt"
                     type="text"
@@ -116,7 +116,7 @@ const handleSelectModel = (selectedOption) => {
             <SearchSelect options={models}  onSelect={handleSelectModel}></SearchSelect>
             <button type="submit" className="btn btn-sm">Submit</button>
             </form> 
-
+            */}
         <div className="text-xs font-thin text-blue-600">
             
             <div className="mx-4 p-4 bg-gray-100 rounded-lg">
