@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react"
 import MenuIcon from "./MenuIcon"
 import New from './New'
 function NavBar() {
-  const VERSION = 'V0.17 23-Sep-2024'
+  const VERSION = 'V0.18 03-Jan-2025'
   /*
   Version history:
   V0.15 : Basic version 
@@ -12,6 +12,7 @@ function NavBar() {
         : added question evaluation and suggestion
         : added question history to context using memory
   V0.17 : Added STRAVE authorize, callback experimental
+  V0.18 : Added MISTRAL API Key expiration messages
   */
   return (
     <div className="fixed left-0 top-0 z-50 w-full  bg-base-200 shadow-md">
