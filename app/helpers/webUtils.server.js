@@ -1,5 +1,7 @@
 import * as cheerio from "cheerio"
 //import pdf from "pdf-parse-new" // uninstalled
+import pdfParse from "pdf-parse";
+import {YoutubeTranscript} from "youtube-transcript"
 
 export function getHeaders(request) {
     const headers = {};
@@ -123,11 +125,12 @@ export async function extractHTMLFromURL(url) {
       } else {
         if (contentType.includes('application/pdf')) {
             // @TODO convert pdf -> text
-            // const pdfData = await response.arrayBuffer();
-            // let pdfText = await pdf(pdfData);
-            // pdfText = pdfText.text;
-            // return pdfText;
-            return `Error: Expecting content-type text/html but got ${contentType}`;
+            const pdfData = await response.arrayBuffer();
+            console.log("pdfData buffer size :",pdfData.byteLength);
+            let pdfText = await pdfParse(pdfData);
+            console.log("pdfText info:",pdfText.info);
+            return pdfText.text;
+            //return `Error: Expecting content-type text/html but got ${contentType}`;
         } else {
           // we assume html / text
           html = await response.text();
@@ -146,6 +149,13 @@ export async function extractTextFromURLOrHTML(urlOrHtml) {
   // Check if the input is a URL or HTML content
    const isUrl = urlOrHtml.startsWith('http');
    if (isUrl) {
+      // check if it is youtube video
+      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=)?([a-zA-Z0-9_-]{11})/;
+      if (youtubeRegex.test(urlOrHtml)) {
+        const transcript = await YoutubeTranscript.fetchTranscript(urlOrHtml);
+        const text = transcript.map(entry => entry.text).join(' ');
+        return text;
+      }
       const html = await extractHTMLFromURL(urlOrHtml);
       if (html) {
          const textContent = htmlToText(html);

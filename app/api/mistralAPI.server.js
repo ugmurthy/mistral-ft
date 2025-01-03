@@ -118,10 +118,19 @@ export function modelDesc(role) {
 
 // smart evaluator for prompt
 export async function promptEvaluator(prompt) {
-
+  console.log("promptEvaluator: ",prompt)
   const ret_val = await mistralEvalQ("open-mistral-7b",prompt);
   const ret_val_json = await ret_val.json();
-  
+  /*
+  promptEvaluator:  {
+  message: 'Unauthorized',
+  request_id: 'a30f3905505b6202a7b5eb01f0623132'
+  }
+  */
+  if (ret_val_json?.message === 'Unauthorized') {
+    console.log("promptEvaluator: ",ret_val_json)
+    throw new Error("Unauthorized :MISTRAL_API_KEY key may have expired");  
+  }
   const eval_result = JSON.parse(ret_val_json?.choices[0].message.content)
   const followUp =  ((10-eval_result.open + eval_result.complexity) / 2)<5?true:false
   const relevant = eval_result.relevance>7?true:false;

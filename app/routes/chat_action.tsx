@@ -10,12 +10,15 @@ import { isValidURL, extractTextFromURLOrHTML } from '~/helpers/webUtils.server'
 export async function action({request}) {
     const features={};
     let {prompt,model, task} = await request.json();
-    console.log("/chat_action : task : ", task);
-    console.log("/chat_action : model: ", model);
-    if (!prompt || !model) {
+    console.log("/chat_action formData: task : ", task);
+    console.log("/chat_action formData: model: ", model);
+    console.log("/chat_action formData: prompt: ", prompt);
+    if (!prompt) {
         return { error: "Missing prompt or model" };
     }
-    
+    if (!model || !task) {
+        return { error: "Missing task or model" };
+    }
     // check if prompt is an valid url
     if (isValidURL(prompt)) {
         try {
@@ -28,16 +31,20 @@ export async function action({request}) {
     }
     
     // get task descript if task !=""
-    const task_description = task? await db.getTaskDescription(task):"You are a helpful assistant";
-    
+    //const task_description = task? await db.getTaskDescription(task):"You are a helpful assistant";
+    const task_record =  await db.getTaskDescription(task);
+    console.log('/chat_action: task_record.model ',task_record.model);
+    console.log('/chat_action: task_record.task ',task_record.task);
+
+    const task_description = task?task_record?.description:"You are a helpful assistant";
     const system = task_description?{role:"system",content:task_description}:{};
     const user = {role:"user",content:prompt};
     const messages = [
             system, user
     ]
     //console.log("/chat_action : Messages ",JSON.stringify(messages,null,2));
-    features.model = model;
-    //console.log("/chat_action ",features?.model, prompt, task);
+    features.model = model?model:task_record?.model;
+    console.log("/chat_action final : ",features?.model,prompt.slice(0,100), task);
     const response = await open_router_generate(features,messages,true);
     if (response.ok) {
         return response;

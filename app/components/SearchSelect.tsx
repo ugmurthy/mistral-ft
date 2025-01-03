@@ -1,8 +1,8 @@
 import  { useState, useMemo } from 'react';
 
-const SelectComponent = ({ onSelect, options }) => {
+const SelectComponent = ({ onSelect,name, options }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState('');
 
   const filteredOptions = useMemo(() => {
     return options.filter(option =>
@@ -23,8 +23,9 @@ const SelectComponent = ({ onSelect, options }) => {
         value={searchTerm}
         onChange={e => setSearchTerm(e.target.value)}
         placeholder="Search..."
+        
       />
-      <select className="select w-full max-w-xs" value={selectedOption} onChange={e => handleSelect(e.target.value)}>
+      <select name={name} className="select w-full max-w-xs" value={selectedOption} onChange={e => handleSelect(e.target.value)}>
         {filteredOptions.map(option => (
           <option key={option} value={option}>
             {option}

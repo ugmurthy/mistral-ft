@@ -200,6 +200,28 @@ db.findTokendBySelector = async (selector) => {
     }
 }
 
+// get all tasks from the database as an array of strings
+db.getTasks = async (columns=["task","task_description","model"],size=100) => {
+    let URL= process.env.XATA_URL+"/tables/tasks/query"
+    let body = JSON.stringify({"columns":columns,"page":{"size":size}});
+    let options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.XATA_API_KEY}`
+          },
+            body: body  // body data type must match "Content-Type" header
+        }
+    let response = await fetch(URL, options);
+    if (response.ok) {
+        const data = await response.json()
+        return data.records;
+        //return _.map(data.records, 'task');
+    } else {
+        console.log("Error getting tasks")
+        return null
+    }
+}
 ///QA : table name : qas
 /// columns : [id,question:string,answer:string,stats:string,userId:link(users)]
 db.updateQA = async (jsonThumbsUp) => {
@@ -323,15 +345,19 @@ db.imageUrlToBase64 = async (imageUrl) => {
 // give a task (string) return the description (string)
 db.getTaskDescription = async (task) => { 
     // search in 'tasks' table and column 'task' for query string=task
+    if (!task) {
+        return null
+    }
     const body = JSON.stringify(
         {query: task,
             tables:[
-              {table:"users",target:[]}, 
-              {table:"authtokens",target:[]},
-              {table:"qas",target:[]},{table:"conversations",target:[]},
+            //  {table:"users",target:[]}, 
+            //  {table:"authtokens",target:[]},
+            //  {table:"qas",target:[]},{table:"conversations",target:[]},
               {table:"tasks",target:[{column:"task"}]}],
-            fuzziness:2,
-            prefix:"phrase"}
+            //fuzziness:0,
+            //prefix:"phrase"
+            }
         )   
     const options = {
         method: 'POST',
@@ -346,7 +372,12 @@ db.getTaskDescription = async (task) => {
     if (response.ok) {
         const data = await response.json()
         if (data.records.length>0) {
-            return data.records[0]?.task_description
+            console.log("f(getTask_Description): ",JSON.stringify(data.records[0]))
+            const model = data.records[0]?.model
+            console.log("f(getTask_Description): model=",model)
+            const task_description = data.records[0]?.task_description
+            const task = data.records[0]?.task
+            return {task:task,model:model,task_description:task_description}
         } else {
             return null
         }

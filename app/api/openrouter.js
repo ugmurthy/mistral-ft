@@ -8,7 +8,7 @@ const HEADERS = {
     "X-Title": "RuGenie",
 }
 // DEFAULT FEATURES
-const TEMPERATURE  = 0.7;
+const TEMPERATURE  = 0.3;
 const MAX_TOKENS = 2048;
 const STREAM = true;
 const MODEL = "google/gemini-flash-1.5-8b-exp";
@@ -61,31 +61,44 @@ export async function open_router_generate(features,messages,stream=STREAM) {
     // features is a object containing model parameters and model
     // messages is 
     const {temperature,model,max_tokens} = features;
-
+    console.log("f(open_router_generate): features",features);
     if(!messages && Array.isArray(messages)) {
         throw new Error("Messages[] is required");
     }
-
+    const body = {
+        "model": model?model:MODEL,
+        "messages": messages,
+        "temperature": temperature?temperature:TEMPERATURE,
+        "max_tokens": max_tokens?max_tokens:MAX_TOKENS,
+        "stream":stream,
+    }
+    console.log("f(open_router_generate): body",body.model,body.temperature);
     const options = {
         method: "POST",
         headers: HEADERS,
-        body: JSON.stringify({
-            "model": model?model:MODEL,
-            "messages": messages,
-            "temperature": temperature?temperature:TEMPERATURE,
-            "max_tokens": max_tokens?max_tokens:MAX_TOKENS,
-            "stream":stream,
-        }),
+        body: JSON.stringify(body),
         signal:signal, 
     }
     const response = await fetch(OPENROUTER_BASE_URL+"chat/completions", options);
     // return new Response(response.body, {
     //     headers:{'Content-type':'text/event-stream'}
     //   });
+    console.log("f(open_router_generate): returning response");
     return response;
 }
-
-
+// Given id of generation, get stats
+export async function getGenerationStats(id) {
+    if (!id) {
+        return null;
+    }
+   const options = {
+        headers: HEADERS,
+    }   
+    const response = await fetch(OPENROUTER_BASE_URL+`generation?id=${id}`,options)
+    const data = await response.json()
+    console.log("f(getGenerationStats): data",data);
+    return data;
+}
 
 /// helpers
 // get price per million tokens for prompt,completions and image if avaialble
