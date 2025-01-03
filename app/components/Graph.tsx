@@ -1,6 +1,7 @@
 import React, { useEffect,useState, useRef } from 'react';
-import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
-
+//import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
+import pkg from 'vis-network/standalone/esm/vis-network.js';
+const { DataSet, Network } = pkg;
 const VisNetwork = () => {
   // Reference to hold the div where vis will render the network
   const visJsRef = useRef(null);
