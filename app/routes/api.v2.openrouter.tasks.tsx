@@ -1,6 +1,6 @@
 import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
 import {useState} from 'react';
-import db from "../app/module/xata.server";
+import db from "../module/xata.server";
 import Generate from "~/components/Generate";
 import Modal from "~/components/Modal";
 

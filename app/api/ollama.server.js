@@ -51,3 +51,22 @@ export async function chat(model, messages, stream = false) {
   }
 }
 
+export async function generate(model, prompt,system='you are a helpful assistant', stream = false) {
+  // chat
+  const url = 'generate';
+  const body = JSON.stringify({ model, prompt,system, stream });
+  console.log("Body ", body);
+
+  if (!stream) {
+    const ret_val = await fetchJSON(url, body);
+    return ret_val;
+  } else {
+    const response = await fetch(BASEURL + url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    });
+    return response;
+    
+  }
+}
