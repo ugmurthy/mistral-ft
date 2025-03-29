@@ -11,7 +11,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   
   const system = "You are a world class Marathon Coach";
   const prompt = "Generate a basic plan to run a 5k in 4 weeks"
-  const model = "deepseek-r1:1.5b";
+  const model = "llama3.2:latest";
   const response = await generate(model,prompt,system,true);
 
   /* 

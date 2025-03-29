@@ -348,7 +348,17 @@ db.getTaskDescription = async (task) => {
     if (!task) {
         return null
     }
-    const body = JSON.stringify(
+    const tasks = await db.getTasks();
+    const idx= _.findIndex(tasks, {task: task}) 
+    
+    console.log("f(getTask_Description): idx=",idx)
+    if (idx<0) {
+        return null
+    }
+    //console.log("f(getTask_Description): ",JSON.stringify(tasks[idx]));
+    return tasks[idx];
+
+    /* const body = JSON.stringify(
         {query: task,
             tables:[
             //  {table:"users",target:[]}, 
@@ -384,7 +394,7 @@ db.getTaskDescription = async (task) => {
     } else {
         console.log("Error searching record in tasks table",await response.json())
         return null
-    }
+    } */
 }
 
 

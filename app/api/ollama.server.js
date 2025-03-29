@@ -35,12 +35,13 @@ export async function chat(model, messages, stream = false) {
   // chat
   const url = 'chat';
   const body = JSON.stringify({ model, messages, stream });
-  console.log("Body ", body);
+  console.log("ollama.server->f(chat)Body ", body);
 
   if (!stream) {
     const ret_val = await fetchJSON(url, body);
     return ret_val;
   } else {
+    
     const response = await fetch(BASEURL + url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
