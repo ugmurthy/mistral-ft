@@ -5,8 +5,8 @@ Sample component on how to use the useOllama hook
 
 */
 import { useState } from 'react'
-import { useOllama, chatStream2Content } from "~/hooks/useES" 
-import MarkdownItRenderer from "./MarkDown";
+import { useOllama, chatStream2Content } from "~/hooks/useOllama" 
+import MarkdownItRenderer from "./MarkDownIt";
 import CommandCopy from "./CommandCopy";
 import DownLoadmd from "./DownLoadmd"
 
@@ -31,7 +31,12 @@ export default function Generate({prompt,model,task="",debug=false}) {
    
     return (    
             <div className="p-4 text-sm font-thin">
-                <MarkdownItRenderer markdown={content} className={""}></MarkdownItRenderer>
+                <MarkdownItRenderer 
+                                    markdown={content} 
+                                    className="max-w-6xl mx-auto" // Additional Tailwind classes
+                                    fontSize="text-lg"
+                                    fontFamily="font-serif"
+                                    textColor="text-blue-900"/>
                 <div className="text-black items-center  flex space-x-2">
                     <CommandCopy txt={content} btnTxt="Copy"></CommandCopy>
                     <DownLoadmd txt={forDownLoad}></DownLoadmd>

@@ -43,10 +43,10 @@ export async function action({ request }: LoaderFunctionArgs) {
   console.log("2. Got Response.......")
  
   return new Response(response.body, {
-          headers:{'Content-type':'text/event-stream'}
+        headers:{'Content-type':'application/x-ndjson'}
         });
 }
-
+/* 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const prompt = url.searchParams.get("prompt");
@@ -88,3 +88,4 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   
 };
+ */

@@ -28,6 +28,7 @@
     "crypto-random-string": "^5.0.0",
     "date-and-time": "^3.5.0",
     "eventsource-client": "^1.1.2",
+    "highlight.js": "^11.11.1",
     "html-react-parser": "^5.1.10",
     "isbot": "^4.1.0",
     "jsonwebtoken": "^9.0.2",

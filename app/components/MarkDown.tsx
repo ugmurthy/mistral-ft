@@ -1,3 +1,6 @@
+//Deprecated
+// This component is deprecated and will be removed in the future.
+
 import MarkdownIt from 'markdown-it';
 import parse from 'html-react-parser';
 

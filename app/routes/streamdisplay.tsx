@@ -19,8 +19,8 @@ export default function Component() {
     return (
         <div>
             <hr></hr>
-        {<Response prompt={prompt} model={model} task={task} debug={true} />}
-        {/*<StreamDisplay prompt={prompt} model={model} task="download_file" />*/}
+        {/*<Response prompt={prompt} model={model} task={task} debug={true} />*/}
+        {<StreamDisplay prompt={prompt} model={model} />}
             <hr></hr>
         <div className="p-4 text-xs text-blue-700 font-thin">
             <pre>{"prompt : "} {prompt}</pre>

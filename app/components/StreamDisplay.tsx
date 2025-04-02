@@ -1,117 +1,152 @@
-  
-  import React, { useState, useEffect, useRef } from 'react';
+import MarkdownItRenderer from './MarkDownIt';
+import CommandCopy from './CommandCopy';
+import DownLoadmd from './DownLoadmd';
+import React, { useState, useEffect, useRef } from 'react';
 
-const StreamDisplay = ({prompt,model,task}) => {
+const StreamDisplay = ({ prompt, model }) => {
   const [messages, setMessages] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
 
-  const BASEURL = '/api/v1/ollama';
-  
   // Automatically scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Reset messages when prompt or model changes
   useEffect(() => {
-    // Create abort controller for fetch
+    setMessages([]);
+    setError(null);
+    
+    // If there's an active connection, abort it
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    
+    setIsConnected(false);
+    setIsLoading(false);
+  }, [prompt, model]);
+
+  // Start streaming function
+  const startStreaming = async () => {
+    // Clear previous state
+    setMessages([]);
+    setError(null);
+    setIsLoading(true);
+    
+    // Abort any existing connection
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller
     abortControllerRef.current = new AbortController();
     const { signal } = abortControllerRef.current;
     
-    // Custom stream handling using fetch instead of EventSource
-    const fetchStream = async () => {
-      try {
-        // Build URL with query parameters
-        const url = new URL(BASEURL, window.location.origin);
-        if (prompt) url.searchParams.append('prompt', prompt);
-        if (model) url.searchParams.append('model', model);
-        if (task) url.searchParams.append('task', task);
-        console.log("StreamDisplay: url",url);
+    try {
+      // Build URL with query parameters
+      const url = new URL('/api/v1/ollama', window.location.origin);
+      
+      
+      setIsConnected(true);
+      console.log('Connecting to:', url.toString());
+      const response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/x-ndjson, application/json',
+        },
+        body: JSON.stringify({ prompt, model }),
+        signal,
+      });
 
-        setIsConnected(true);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      // Get the reader from the response body stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      // Process the stream
+      while (true) {
+        const { done, value } = await reader.read();
         
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/x-ndjson, application/json',
-          },
-          signal,
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        // Get the reader from the response body stream
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-
-        // Process the stream
-        while (true) {
-          const { done, value } = await reader.read();
-          
-          if (done) {
-            break;
-          }
-
-          // Decode the chunk and add it to our buffer
-          buffer += decoder.decode(value, { stream: true });
-          
-          // Process any complete JSON objects in the buffer
-          const lines = buffer.split('\n');
-          
-          // Keep the last line in the buffer if it's incomplete
-          buffer = lines.pop() || '';
-          
-          // Process complete lines
-          for (const line of lines) {
-            if (line.trim() === '') continue;
-            
-            try {
-              const data = JSON.parse(line);
-              console.log("StreamDisplay: data",data);
-              setMessages((prevMessages) => {
-                // If this is a completion message (done: true)
-                if (data.done) {
-                  return [...prevMessages, { ...data, type: 'completion' }];
-                }
-                
-                // Regular message with response text
-                return [...prevMessages, { ...data, type: 'message' }];
-              });
-            } catch (err) {
-              console.error('Error parsing JSON line:', err, line);
-            }
-          }
-        }
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          console.log('Fetch aborted');
-        } else {
-          console.error('Stream error:', err);
-          setError(`Connection error: ${err.message}`);
+        if (done) {
+          setIsLoading(false);
           setIsConnected(false);
+          break;
+        }
+
+        // Decode the chunk and add it to our buffer
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Process any complete JSON objects in the buffer
+        const lines = buffer.split('\n');
+        
+        // Keep the last line in the buffer if it's incomplete
+        buffer = lines.pop() || '';
+        
+        // Process complete lines
+        for (const line of lines) {
+          if (line.trim() === '') continue;
           
-          // Try to reconnect after a delay
-          setTimeout(fetchStream, 3000);
+          try {
+            const data = JSON.parse(line);
+            
+            setMessages((prevMessages) => {
+              // If this is a completion message (done: true)
+              if (data.done) {
+                setIsLoading(false);
+                return [...prevMessages, { ...data, type: 'completion' }];
+              }
+              
+              // Regular message with response text
+              return [...prevMessages, { ...data, type: 'message' }];
+            });
+          } catch (err) {
+            console.error('Error parsing JSON line:', err, line);
+          }
         }
       }
-    };
-
-    fetchStream();
-
-    // Clean up the connection when component unmounts
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        console.log('Fetch aborted');
+      } else {
+        console.error('Stream error:', err);
+        setError(`Connection error: ${err.message}`);
       }
+      setIsLoading(false);
       setIsConnected(false);
-    };
-  }, []);
+    }
+  };
 
+  // Abort streaming function
+  const abortStreaming = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsLoading(false);
+    setIsConnected(false);
+  };
+
+  //console.log('Messages:', messages);
+  
+  let content = messages.map((message, index) => {
+    if (message.type === 'completion') {
+      // do not show the completions message for now
+    } else {
+      return message.message.content
+    }
+  })
+   
+  console.log('content:', content);
+  content = content.join("");
   // Format the response text
   const formatResponse = (message) => {
     if (message.type === 'completion') {
@@ -142,21 +177,23 @@ const StreamDisplay = ({prompt,model,task}) => {
     } else {
       // Regular message with response text
       return (
-        <span className="inline-block">
-          {message.message.content}
-        </span>
+        <span className="inline-block">{message.message.content} </span>
       );
     }
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
-      <div className="mb-4 flex items-center">
-        <h2 className="text-xl font-bold">Stream Display</h2>
-        <div className={`ml-4 h-3 w-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-        <span className="ml-2 text-sm text-gray-600">
-          {isConnected ? 'Connected' : 'Disconnected'}
-        </span>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <h2 className="text-xl font-bold">Stream Display</h2>
+          <div className={`ml-4 h-3 w-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+          <span className="ml-2 text-sm text-gray-600">
+            {isConnected ? 'Connected' : 'Disconnected'}
+          </span>
+        </div>
+        
+        
       </div>
 
       {error && (
@@ -166,17 +203,52 @@ const StreamDisplay = ({prompt,model,task}) => {
       )}
 
       <div className="border rounded-lg p-4 bg-white shadow-sm">
+        {prompt && model && (
+          <div className="mb-4 p-3 bg-gray-100 rounded-md">
+            <div><strong>Model:</strong> {model}</div>
+            <div><strong>Prompt:</strong> {prompt}</div>
+          </div>
+        )}
+        
         <div className="font-mono text-sm whitespace-pre-wrap">
-          {messages.map((message, index) => (
+          
+          {/*messages.map((message, index) => (
             <React.Fragment key={index}>
               {formatResponse(message)}
             </React.Fragment>
-          ))}
-          <div ref={messagesEndRef} />
+          ))*/}
+          <MarkdownItRenderer 
+              markdown={content} 
+              className="max-w-6xl mx-auto" // Additional Tailwind classes
+              fontSize="text-lg"
+              fontFamily="font-serif"
+              textColor="text-blue-900"/>
+              
+                  <div ref={messagesEndRef} />
         </div>
       </div>
+      <div className="fixed  bottom-4 right-4">
+          {!isLoading ? (
+            <button
+              onClick={startStreaming}
+              className="btn btn-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              disabled={!prompt || !model}
+            >
+              Start Stream
+            </button>
+          ) : (
+            <button
+              onClick={abortStreaming}
+              className="btn btn-sm px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            >
+              Abort Stream
+            </button>
+          )}
+        </div>
+
     </div>
   );
 };
+
 
 export default StreamDisplay;

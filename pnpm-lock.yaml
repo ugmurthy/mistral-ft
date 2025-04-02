@@ -59,6 +59,9 @@ importers:
       eventsource-client:
         specifier: ^1.1.2
         version: 1.1.2
+      highlight.js:
+        specifier: ^11.11.1
+        version: 11.11.1
       html-react-parser:
         specifier: ^5.1.10
         version: 5.1.10(@types/react@18.3.3)(react@18.3.1)
@@ -2155,6 +2158,10 @@ packages:
 
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
+
+  highlight.js@11.11.1:
+    resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
+    engines: {node: '>=12.0.0'}
 
   hosted-git-info@6.1.1:
     resolution: {integrity: sha512-r0EI+HBMcXadMrugk0GCQ+6BQV39PiWAZVfq7oIckeGiN7sjRGyQxPdft3nQekFTCQbYxLBH+/axZMeH8UX6+w==}
@@ -6602,6 +6609,8 @@ snapshots:
   headers-polyfill@3.3.0: {}
 
   highlight.js@10.7.3: {}
+
+  highlight.js@11.11.1: {}
 
   hosted-git-info@6.1.1:
     dependencies:

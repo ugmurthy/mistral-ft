@@ -7,7 +7,8 @@ Sample component on how to use the useOpenRouterGenerate hook
 */
 import { useState } from 'react'
 import { useOpenRouterGenerate } from "~/hooks/useOpenRouterGenerate" 
-import MarkdownItRenderer from "./MarkDown";
+//import MarkdownItRenderer from "./MarkDown";
+import MarkdownItRenderer from "./MarkDownIt";
 import CommandCopy from "./CommandCopy";
 import DownLoadmd from "./DownLoadmd"
 import Stats from "./Stats"
@@ -20,7 +21,8 @@ export default function Generate({prompt,model,task,showStats=false}) {
     const [content,idArray,usage,error] = useOpenRouterGenerate(
         prompt,
         model,
-        task
+        task,
+        true
     )
 
     if (error) return <pre>Error: {JSON.stringify(error,null,2)}</pre>
@@ -39,7 +41,13 @@ export default function Generate({prompt,model,task,showStats=false}) {
         <div>
             {showStats&&<pre className="font-thin text-xs">{JSON.stringify(stats,null,2)}</pre>}
             <div className="p-4 text-sm font-thin">
-                <MarkdownItRenderer markdown={content} className={""}></MarkdownItRenderer>
+                   <MarkdownItRenderer 
+                                    markdown={content} 
+                                    className="max-w-2xl mx-auto" // Additional Tailwind classes
+                                    fontSize="text-lg"
+                                    fontFamily="font-serif"
+                                    textColor="text-blue-900"/>
+                {/*<MarkdownItRenderer markdown={content} className={""}></MarkdownItRenderer>*/}
                 <div className="text-black items-center  flex space-x-2">
                 <CommandCopy txt={content} btnTxt="Copy"></CommandCopy>
                 <DownLoadmd txt={forDownLoad}></DownLoadmd>

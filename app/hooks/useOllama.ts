@@ -1,5 +1,4 @@
 import {useState, useEffect, useRef} from 'react';
-import {createEventSource} from "eventsource-client";
 
 
 /* Generate streaming response
@@ -47,96 +46,114 @@ export function chatStream2Content(data) {
     }
     return {content,stats}
   }
-/* function jsonArray2Content(allJSON) {
-    let content=''
-    const idSet = new Set();
-    for (const j of allJSON) { 
-        if (j.hasOwnProperty('error')) {
-            console.log("Error: jsonArray2Content: ",j.error)
-            content += `\nError: ${j.error.message}: ${j.code}`;
-            continue;
-        }
-        try {
-        content += j.choices[0]?.delta.content
-        idSet.add(j.id);
-        } catch(e) {
-            console.log("Error: jsonArray2Content: ",j)
-        }
-    }
-    const usage=allJSON[allJSON.length-1]?.usage;
-    const idArray = Array.from(idSet);
-    return [content,idArray,usage];
-}
- */
-export const useOllama = (prompt:string, model:string, task:string="", debug=false) => {
+
+ export const useOllama = (prompt:string, model:string, task:string="", debug=false) => {
     
-    const [data, setData] = useState([]);
+    const [messages, setMessages] = useState([]);
     const [error,setError]=useState(null);
-    const esRef = useRef(null);
+    
+    const abortControllerRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isConnected, setIsConnected] = useState(false);
     const BASE_URL = '/api/v1/ollama'
-
-        useEffect(() => {
-        // if any of prompt or model is "" or null or undefined    
-        if ( !prompt || !model ) return;
-        /*
-        headers: {
-                Accept: 'text/event-stream',
-                "Content-Type": 'application/x-ndjson'
-            },
-        */
-        debug && console.log("useOllama: ",BASE_URL, model, prompt.slice(0,50)+'...');
-        if (!esRef.current) { // prevent second call
-            debug && console.log("useEffect: useOllama: Creating EventSource...")
-            esRef.current = createEventSource({
-            url: BASE_URL,
-            
-            method: 'POST',
-            body: JSON.stringify({
-                prompt: prompt,
-                model: model,
-                task:task,
-            }),
-            onMessage: ({data,event,id}) => {
-                debug &&  console.log(data,event,id)
-                if (data.includes('[DONE]')) {
-                    debug && console.log("useEffect: OpenRouterGenerate: [DONE] Closing EventSource...")
-                    esRef.current.close();
-                } else {
-                    try {
-                        const chunk = JSON.parse(data);
-                        if (chunk.hasOwnProperty('error')) {
-                            console.log("useEffect: OpenRouterGenerate: Error: ",chunk.error)
-                            //12/Nov/24 - store error message to data so that it can be displayed to user
-                            setError(chunk);
-                            esRef.current.close();
-                            //12/Nov/24 
-                            //return ;
-                        }
-                        debug && console.log(chunk.id, chunk.choices[0].delta.content);
-                        setData(prevData => [...prevData, chunk]);
-                    } catch(e) {
-                        debug && console.log(`Error: EventSource: While Parsing : ${data} `,e)
-                        debug && console.log("Closing connection")
-                        esRef.current.close();
-                    }
-                }
-            },
-            
-                });
-            
-        }
-
-        return () => { // teardown EventSource to cleanup: DONT DO it as it will invoke another Event Source
-                // Do nothing as it will invoke another Event Source
-                // the closure is done at end of stream 
-                esRef.current.close();
-                esRef.current = null;
-                console.log("useEffect: useOllama...teardown...")
-        }
+    
+    
+    useEffect(() => {
+        // Create abort controller for fetch
+        abortControllerRef.current = new AbortController();
+        const { signal } = abortControllerRef.current;
         
-    },[]) // run once
+        // Custom stream handling using fetch instead of EventSource
+        const fetchStream = async () => {
+          try {
+            setIsConnected(true);
+            const url = new URL(BASE_URL, window.location.origin);
+            // if (prompt) url.searchParams.append('prompt', prompt);
+            // if (model) url.searchParams.append('model', model);
+            // if (task) url.searchParams.append('task', task);
+            console.log("fetchStream url",url.toString());
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/x-ndjson, application/json',
+              },
+              body: JSON.stringify({ prompt, model, task }),
+              signal,
+            });
+    
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            // Get the reader from the response body stream
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+    
+            // Process the stream
+            while (true) {
+              const { done, value } = await reader.read();
+              
+              if (done) {
+                break;
+              }
+    
+              // Decode the chunk and add it to our buffer
+              buffer += decoder.decode(value, { stream: true });
+              
+              // Process any complete JSON objects in the buffer
+              const lines = buffer.split('\n');
+              
+              // Keep the last line in the buffer if it's incomplete
+              buffer = lines.pop() || '';
+              
+              // Process complete lines
+              for (const line of lines) {
+                if (line.trim() === '') continue;
+                
+                try {
+                  const data = JSON.parse(line);
+                  
+                  setMessages((prevMessages) => {
+                    // If this is a completion message (done: true)
+                    if (data.done) {
+                      return [...prevMessages, { ...data, type: 'completion' }];
+                    }
+                    
+                    // Regular message with response text
+                    return [...prevMessages, { ...data, type: 'message' }];
+                  });
+                } catch (err) {
+                  console.error('Error parsing JSON line:', err, line);
+                }
+              }
+            }
+          } catch (err) {
+            if (err?.name === 'AbortError') {
+              console.log('Fetch aborted');
+            } else {
+              console.error('Stream error:', err);
+              setError(`Connection error: ${err?.message}`);
+              setIsConnected(false);
+              
+              // Try to reconnect after a delay
+              setTimeout(fetchStream, 3000);
+            }
+          }
+        };
+    
+        fetchStream();
+    
+        // Clean up the connection when component unmounts
+        return () => {
+          if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+          }
+          setIsConnected(false);
+        };
+      }, [prompt, model, task, BASE_URL]);
 
     //onst [content,idArray,usage] = jsonArray2Content(data);
-    return [data,error];
+    return [messages,error];
     //return data;
 }            
